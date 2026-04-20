@@ -33,7 +33,6 @@ body {
   padding: 0;
 }
 
-/* Auth Pages (Login & Register) */
 .page {
   min-height: 100vh;
   display: flex;
@@ -140,4 +139,90 @@ body {
 .button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.error {
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--error-text);
+  display: none; /* hidden by default */
+}
+
+.linkText {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.link {
+  color: var(--primary);
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--text-muted);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 2rem;
+}
+
+.project-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--gray-light);
+  border-radius: 8px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  padding: 20px;
+  background: var(--gray-light);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--primary);
+}
+
+.stat-card p.label {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.stat-card p.value {
+  margin: 0;
+  font-size: 32px;
+  font-weight: bold;
 }
