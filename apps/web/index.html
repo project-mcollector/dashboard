@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCollector - Вход</title>
+  <link rel="stylesheet" href="./src/css/style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <h1 class="title">MCollector</h1>
+      <p class="subtitle">Аналитика для вашего сайта</p>
+
+      <form id="loginForm" class="form">
+        <div id="loginError" class="error"></div>
+
+        <div>
+          <label class="label" for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="you@example.com"
+            class="input"
+            required
+          />
+        </div>
+
+        <div>
+          <label class="label" for="password">Пароль</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            class="input"
+            required
+          />
+        </div>
+
+        <button type="submit" class="button" id="submitBtn">
+          Войти
+        </button>
+        
+        <p class="linkText">
+          Нет аккаунта?
+          <a href="/register.html" class="link">Зарегистрироваться</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script src="./src/js/main.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const submitBtn = document.getElementById('submitBtn');
+      
+      hideError('loginError');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Вход...';
+      
+      try {
+        const res = await fetch(`${AUTH_URL}/Auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        if (!res.ok) {
+          showError('loginError', 'Неверный email или пароль');
+          return;
+        }
+        
+        const data = await res.json();
+        setToken(data.accessToken);
+        window.location.href = '/projects.html';
+      } catch (err) {
+        showError('loginError', 'Ошибка соединения с сервером');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Войти';
+      }
+    });
+
+    // If user is already logged in, redirect
+    if (getToken()) {
+        window.location.href = '/projects.html';
+    }
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCollector Dashboard</title>
+    <link rel="stylesheet" href="./src/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>MCollector Dashboard</h1>
+    </header>
+    <main>
+        <p>Welcome to the MCollector Dashboard.</p>
+        <div id="app"></div>
+    </main>
+    <script src="./src/js/main.js"></script>
+</body>
+</html>
