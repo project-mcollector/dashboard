@@ -1,0 +1,8 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "Vanilla JS frontend for MCollector Dashboard",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
