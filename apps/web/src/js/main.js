@@ -35,7 +35,8 @@ function hideError(elementId) {
     errorEl.textContent = '';
     errorEl.style.display = 'none';
   }
-}// Basic JavaScript entry point
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("MCollector Dashboard loaded.");
     const appDiv = document.getElementById("app");

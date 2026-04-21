@@ -21,7 +21,6 @@
       <div id="errorIndicator" class="error" style="display:none; margin-bottom: 20px;">Нет данных или ошибка соединения</div>
 
       <div id="dashboardContent" style="display: none;">
-        <!-- Overview Stats -->
         <div class="stats-grid">
           <div class="stat-card">
             <p class="label">События</p>
@@ -37,16 +36,12 @@
           </div>
         </div>
 
-        <!-- Events Chart -->
         <h2 class="chart-container-title">События по дням</h2>
         <div class="chart-container" id="eventsChart">
-          <!-- Bars generated via JS -->
         </div>
 
-        <!-- Users Chart -->
         <h2 class="chart-container-title">Пользователи по дням</h2>
         <div class="chart-container" id="usersChart">
-          <!-- Bars generated via JS -->
         </div>
       </div>
     </main>
@@ -90,7 +85,6 @@
         const eventsData = await eventsRes.json();
         const usersData = await usersRes.json();
 
-        // Update Overview Let's ensure it has fields: totalEvents, uniqueUsers, pageViews
         document.getElementById('statEvents').textContent = overviewData.totalEvents || 0;
         document.getElementById('statUsers').textContent = overviewData.uniqueUsers || 0;
         document.getElementById('statPageviews').textContent = overviewData.pageViews || 0;
@@ -120,30 +114,25 @@
       }
 
       const counts = timeseriesData.map(d => d.count || 0);
-      const maxCount = Math.max(...counts, 1); // Avoid div by zero
+      const maxCount = Math.max(...counts, 1);
 
       timeseriesData.forEach(point => {
         const heightPercent = ((point.count || 0) / maxCount) * 100;
         
-        // Wrapper for bar + label
         const wrapper = document.createElement('div');
         wrapper.className = 'chart-bar-wrapper';
 
-        // Actual bar
         const bar = document.createElement('div');
         bar.className = `chart-bar ${type === 'users' ? 'users' : ''}`;
         bar.style.height = `${heightPercent}%`;
         
-        // Tooltip hover
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
         tooltip.textContent = `${point.count || 0}`;
         bar.appendChild(tooltip);
 
-        // Date label (X-Axis)
         const label = document.createElement('div');
         label.className = 'chart-label';
-        // Extract DD.MM format from ISO string if possible
         try {
           const dateObj = new Date(point.timestamp);
           const d = dateObj.getDate().toString().padStart(2, '0');
