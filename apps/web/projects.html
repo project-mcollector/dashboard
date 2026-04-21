@@ -67,7 +67,7 @@
   <script>
     const token = getToken();
     if (!token) {
-      window.location.href = '/index.html';
+      window.location.href = './index.html';
     }
 
     let currentProjects = [];
@@ -119,7 +119,7 @@
           openBtn.style.marginTop = '0';
           openBtn.textContent = 'Открыть';
           openBtn.onclick = () => {
-            window.location.href = `/dashboard.html?projectId=${proj.id}`;
+            window.location.href = `./dashboard.html?projectId=${proj.id}`;
           };
           
           item.appendChild(nameSpan);
@@ -169,7 +169,7 @@
       document.getElementById('modalSnippet').textContent = `<script>\n  analytics.init('${project.apiKey}')\n<\/script>`;
       
       document.getElementById('goToDashboardBtn').onclick = () => {
-        window.location.href = `/dashboard.html?projectId=${project.id}`;
+        window.location.href = `./dashboard.html?projectId=${project.id}`;
       };
       
       document.getElementById('createdModal').classList.add('active');

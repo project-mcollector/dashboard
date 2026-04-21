@@ -66,7 +66,7 @@
 
         <p class="linkText">
           Уже есть аккаунт?
-          <a href="/index.html" class="link">Войти</a>
+          <a href="./index.html" class="link">Войти</a>
         </p>
       </form>
     </div>
@@ -116,7 +116,7 @@
           return;
         }
         
-        const loginRes = await fetch(`${AUTH_URL}/Auth/login`, {
+        const loginRes = await fetch(`${AUTH_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -125,9 +125,9 @@
         if (loginRes.ok) {
           const data = await loginRes.json();
           setToken(data.accessToken);
-          window.location.href = '/projects.html';
+          window.location.href = './projects.html';
         } else {
-          window.location.href = '/index.html';
+          window.location.href = './index.html';
         }
       } catch (err) {
         showError('registerError', 'Ошибка соединения с сервером');
@@ -138,7 +138,7 @@
     });
 
     if (getToken()) {
-        window.location.href = '/projects.html';
+      window.location.href = './projects.html';
     }
   </script>
 </body>

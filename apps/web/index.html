@@ -43,7 +43,7 @@
         
         <p class="linkText">
           Нет аккаунта?
-          <a href="/register.html" class="link">Зарегистрироваться</a>
+          <a href="./register.html" class="link">Зарегистрироваться</a>
         </p>
       </form>
     </div>
@@ -63,7 +63,7 @@
       submitBtn.textContent = 'Вход...';
       
       try {
-        const res = await fetch(`${AUTH_URL}/Auth/login`, {
+        const res = await fetch(`${AUTH_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -76,7 +76,7 @@
         
         const data = await res.json();
         setToken(data.accessToken);
-        window.location.href = '/projects.html';
+        window.location.href = './projects.html';
       } catch (err) {
         showError('loginError', 'Ошибка соединения с сервером');
       } finally {
@@ -87,7 +87,7 @@
 
     // If user is already logged in, redirect
     if (getToken()) {
-        window.location.href = '/projects.html';
+      window.location.href = './projects.html';
     }
   </script>
 </body>
