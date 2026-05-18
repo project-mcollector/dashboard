@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();
 
@@ -15,7 +16,9 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        var origins = builder.Configuration["AllowedOrigins"]?.Split(',')
+            ?? ["http://localhost:3000"];
+        policy.WithOrigins(origins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -23,10 +26,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<AnalyticsDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-        builder.Configuration["ConnectionStrings:DefaultConnection"] ??
-        Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ??
-        "Host=postgres;Database=mcollector;Username=app;Password=app";
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured");
     options.UseNpgsql(connectionString);
 });
 
@@ -45,7 +46,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AnalyticsDbContext>();
-    dbContext.Database.Migrate();
+    if (dbContext.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+        dbContext.Database.Migrate();
+    else
+        dbContext.Database.EnsureCreated();
 }
 
 if (app.Environment.IsDevelopment())
@@ -61,6 +65,9 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

@@ -157,25 +157,58 @@
                 body: JSON.stringify({ email, password, organizationName })
             });
 
-            const data = await res.json();
-
             if (!res.ok) {
-                showError('registerError', data.message || 'Ошибка регистрации');
+                let errMsg = 'Ошибка регистрации';
+                const responseText = await res.text();
+                try {
+                    const errorData = JSON.parse(responseText);
+                    errMsg = errorData.message || errMsg;
+                } catch {
+                    errMsg = responseText || errMsg;
+                }
+                showError('registerError', errMsg);
                 return;
             }
 
-            setToken(data.accessToken);
-
-            const projectRes = await fetch(`${AUTH_URL}/api/projects`, {
+            // Registration successful! Identity does not return tokens on register.
+            // We must login to get the tokens.
+            const loginRes = await fetch(`${AUTH_URL}/api/auth/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${data.accessToken}`
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!loginRes.ok) {
+                showError('registerError', 'Аккаунт создан, но не удалось авторизоваться. Пожалуйста, войдите.');
+                window.location.href = './index.html';
+                return;
+            }
+
+            let data;
+            try {
+                data = await loginRes.json();
+            } catch (e) {
+                showError('registerError', 'Ошибка при авторизации: неверный ответ сервера');
+                return;
+            }
+            setToken(data.accessToken || data.AccessToken);
+            setRefreshToken(data.refreshToken || data.RefreshToken);
+
+            const projectRes = await authFetch(`${AUTH_URL}/api/projects`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ name: organizationName })
             });
 
-            const project = await projectRes.json();
+            let project;
+            try {
+                project = await projectRes.json();
+            } catch (e) {
+                showError('registerError', 'Ошибка при создании проекта: неверный ответ сервера');
+                return;
+            }
             createdProjectId = project.id;
 
             document.getElementById('apiKeyText').textContent = project.apiKey;

@@ -5,182 +5,495 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MCollector - Мои проекты</title>
   <link rel="stylesheet" href="./src/css/style.css">
+  <style>
+    .iconButtonDanger { color: #ef4444; border: none; background: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; }
+    .iconButtonDanger:hover { background: #fef2f2; }
+    .projectCardActions { display: flex; align-items: center; gap: 8px; margin-top: 12px; justify-content: space-between; }
+    .apiKeyDisplay { font-family: monospace; letter-spacing: 1px; color: #a1a1aa; font-size: 14px; }
+    .apiKeyActions button { display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: none; border: none; border-radius: 4px; cursor: pointer; color: #a1a1aa; transition: 0.2s; }
+    .apiKeyActions button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .projectNameRow { display: flex; align-items: center; gap: 8px; }
+    .renameIcon { background: none; border: none; cursor: pointer; color: #a1a1aa; padding: 4px; display: inline-flex; border-radius: 4px; }
+    .renameIcon:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    
+    .confirmModal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); z-index: 100; }
+    .confirmModal-content { background: #1a1a1e; border: 1px solid #27272a; padding: 24px; border-radius: 8px; max-width: 400px; width: 90%; }
+    .dangerButton { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; }
+    .dangerButton:hover { background: #b91c1c; }
+    .searchRow { margin-bottom: 24px; }
+  </style>
 </head>
 <body>
   <div class="page">
-
     <div class="header">
-      <h1 class="title">Мои проекты</h1>
-      <div class="userInfo">
-        <button onclick="logout()" class="buttonOutline">Выйти</button>
+      <div>
+        <h1 class="title">Мои проекты</h1>
+        <p class="subtitle" id="projectsCount" style="display: none;"></p>
       </div>
+      <div class="userInfo">
+        <span id="userEmail" class="userEmail" style="margin-right: 12px; color: #a1a1aa;"></span>
+        <button class="iconButton" onclick="logout()" title="Выйти" style="background:none;border:none;color:#a1a1aa;cursor:pointer;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+        <button class="iconButtonDanger" onclick="showDeleteAccountModal()" title="Удалить аккаунт">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="errorBanner" class="errorBanner" style="display: none; background: #ef4444; color: white; padding: 12px; border-radius: 6px; margin-bottom: 24px;"></div>
+
+    <div id="searchRow" class="searchRow" style="display: none;">
+      <input type="text" id="searchInput" placeholder="Поиск проектов..." class="input" />
     </div>
 
     <div id="loadingContainer">
-      <div class="skeletonCard"></div>
-      <div class="skeletonCard" style="margin-top: 16px;"></div>
-      <div class="skeletonCard" style="margin-top: 16px;"></div>
+      <div class="projectsGrid">
+        <div class="skeletonCard"></div>
+        <div class="skeletonCard"></div>
+        <div class="skeletonCard"></div>
+      </div>
     </div>
 
     <div id="projectsContainer" style="display: none;">
-
-      <p id="emptyState" class="emptyState" style="display: none;">
-        У вас пока нет проектов
-      </p>
-
-      <div id="projectsGrid" class="projectsGrid"></div>
-
-      <div class="createSection">
-        <p class="createTitle">Создать новый проект</p>
-        <div class="createRow">
-          <input
-            type="text"
-            id="newProjectName"
-            placeholder="Название проекта"
-            class="input"
-          />
-          <button id="createBtn" class="button" onclick="createProject()">
-            Создать
-          </button>
-        </div>
+      <div id="emptyStateBlock" class="emptyStateBlock" style="display: none; text-align: center; margin: 40px 0;">
+        <p class="emptyStateText" style="color: #a1a1aa; margin-bottom: 16px;">У вас пока нет проектов</p>
+        <button class="button" onclick="document.getElementById('newProjectName').focus()">Создать первый проект</button>
       </div>
 
+      <div id="projectsGrid" class="projectsGrid"></div>
+      <p id="noSearchResults" style="display: none; color: #a1a1aa;">Ничего не найдено</p>
+
+      <div class="createSection" style="margin-top: 40px;">
+        <p class="createTitle" style="margin-bottom: 12px; font-weight: 500;">Создать новый проект</p>
+        <div class="createRow" style="display: flex; gap: 12px;">
+          <input type="text" id="newProjectName" placeholder="Название проекта" class="input" style="flex: 1;" />
+          <button id="createBtn" class="button" onclick="createProject()">Создать</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div id="modalOverlay" class="modalOverlay" style="display: none;">
-    <div class="modal">
-      <h2 class="modalTitle">Проект создан!</h2>
-      <p class="modalSubtitle">
-        Установите SDK на ваш сайт чтобы начать собирать данные
-      </p>
+  <!-- Delete Account Modal -->
+  <div id="deleteAccountModal" class="confirmModal" style="display: none;">
+    <div class="confirmModal-content">
+      <h2 style="margin:0 0 12px 0;">Удалить аккаунт?</h2>
+      <p style="color: #a1a1aa; margin-bottom: 24px;">Все ваши проекты и данные будут удалены безвозвратно. Это действие нельзя отменить</p>
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="buttonOutline" onclick="closeDeleteAccountModal()">Отмена</button>
+        <button id="confirmDeleteAccountBtn" class="dangerButton" onclick="deleteAccount()">Удалить аккаунт</button>
+      </div>
+    </div>
+  </div>
 
-      <label class="label">Ваш API-ключ</label>
-      <div class="apiKeyBox">
-        <span class="apiKeyText" id="modalApiKey"></span>
-        <button class="buttonSmall" id="copyBtn">Скопировать</button>
+  <!-- Rename Project Modal -->
+  <div id="renameModal" class="confirmModal" style="display: none;">
+    <div class="confirmModal-content">
+      <h2 style="margin:0 0 12px 0;">Переименовать проект</h2>
+      <label class="label">Новое название</label>
+      <input type="text" id="renameInput" class="input" style="margin-bottom: 20px;" />
+      <div style="display: flex; gap: 12px;">
+        <button id="confirmRenameBtn" class="button" onclick="confirmRename()" style="flex:1;">Сохранить</button>
+        <button class="buttonOutline" onclick="closeRenameModal()" style="flex:1;">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key Modal -->
+  <div id="apiKeyModal" class="confirmModal" style="display: none;">
+    <div class="confirmModal-content">
+      <h2 class="modalTitle">API-ключ</h2>
+      <p class="modalSubtitle" id="apiKeyModalProjectName"></p>
+
+      <label class="label">Текущий ключ</label>
+      <div class="apiKeyBox" style="display: flex; align-items: center; justify-content: space-between; background: #27272a; padding: 12px; border-radius: 6px; margin-bottom: 24px;">
+        <span class="apiKeyText" id="apiKeyModalValue" style="font-family: monospace; color: #a1a1aa;"></span>
+        <div style="display: flex; gap: 8px;">
+          <button class="buttonSmall" id="apiKeyModalCopyBtn" onclick="copyModalApiKey()">Скопировать</button>
+        </div>
       </div>
 
-      <label class="label">Добавьте на ваш сайт</label>
-      <div class="codeBlock" id="modalSnippet"></div>
+      <div id="regenerateConfirmUI" style="display:none; background: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; padding: 16px; border-radius: 6px; margin-bottom: 16px;">
+        <p style="color: #fca5a5; font-size: 14px; margin: 0 0 12px 0;">Старый ключ перестанет работать немедленно. Все интеграции, использующие его, сломаются до обновления.</p>
+        <div style="display: flex; gap: 8px;">
+          <button id="doRegenerateBtn" class="dangerButton" onclick="doRegenerate()">Да, перегенерировать</button>
+          <button class="buttonOutline" onclick="hideRegenerateConfirm()">Отмена</button>
+        </div>
+      </div>
 
-      <div class="modalButtons">
-        <button class="button" id="goToDashboardBtn">Перейти в дашборд</button>
-        <button class="buttonOutline" onclick="closeModal()">Закрыть</button>
+      <button id="triggerRegenerateBtn" class="buttonOutline" onclick="showRegenerateConfirm()" style="width: 100%; margin-bottom: 16px;">
+        ↺ Перегенерировать ключ
+      </button>
+
+      <button class="buttonOutline" onclick="closeApiKeyModal()" style="width: 100%;">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Create Success Modal -->
+  <div id="createSuccessModal" class="confirmModal" style="display: none;">
+    <div class="confirmModal-content">
+      <h2 class="modalTitle">Проект создан!</h2>
+      <p class="modalSubtitle">Установите SDK на ваш сайт чтобы начать собирать данные</p>
+
+      <label class="label">Ваш API-ключ</label>
+      <div class="apiKeyBox" style="display: flex; background: #27272a; padding: 12px; border-radius: 6px; margin-bottom: 16px; align-items: center; justify-content: space-between;">
+        <span class="apiKeyText" id="createdApiKey" style="font-family: monospace;"></span>
+        <button class="buttonSmall" id="createdCopyBtn">Скопировать</button>
+      </div>
+
+      <label class="label">Установка</label>
+      <div class="codeBlock" style="background:#000; padding:12px; border-radius:4px; font-family:monospace; margin-bottom:16px;">npm install @mcollector/sdk</div>
+
+      <label class="label">Инициализация</label>
+      <div class="codeBlock" id="createdSnippet" style="background:#000; padding:12px; border-radius:4px; font-family:monospace; margin-bottom:24px; white-space: pre-wrap;"></div>
+
+      <div style="display: flex; gap: 12px;">
+        <button class="button" id="goToDashboardBtn" style="flex:1;">Перейти в дашборд</button>
+        <button class="buttonOutline" onclick="closeCreateSuccessModal()" style="flex:1;">Закрыть</button>
       </div>
     </div>
   </div>
 
   <script src="./src/js/main.js"></script>
   <script>
-    const token = getToken()
-    if (!token) window.location.href = './index.html'
+    if (!getToken()) window.location.href = './index.html';
 
-    let currentProjects = []
-    let currentCreatedProject = null
+    let currentProjects = [];
+    let visibleKeys = new Set();
+    let renameTarget = null;
+    let apiKeyTarget = null;
 
-    async function loadProjects() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => renderProjects());
+
+    const newProjectNameInput = document.getElementById('newProjectName');
+    newProjectNameInput.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') createProject();
+    });
+    
+    document.getElementById('renameInput').addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') confirmRename();
+    });
+
+    async function loadData() {
       try {
-        const res = await fetch(`${AUTH_URL}/api/projects`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        const [projectsRes, userRes] = await Promise.all([
+          authFetch(`${AUTH_URL}/api/projects`),
+          authFetch(`${AUTH_URL}/api/users/me`)
+        ]);
 
-        if (res.status === 401) {
-          logout()
-          return
+        const [projectsData, userData] = await Promise.all([
+            projectsRes.json(),
+            userRes.json()
+        ]);
+
+        currentProjects = projectsData;
+        
+        if (userData.email) {
+            document.getElementById('userEmail').textContent = userData.email;
         }
 
-        const data = await res.json()
-        currentProjects = data
-        renderProjects()
+        renderProjects();
       } catch (err) {
-        console.error(err)
+        showErrorBanner("Ошибка загрузки данных");
       } finally {
-        document.getElementById('loadingContainer').style.display = 'none'
-        document.getElementById('projectsContainer').style.display = 'block'
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('projectsContainer').style.display = 'block';
       }
     }
 
     function renderProjects() {
-        const grid = document.getElementById('projectsGrid')
-        const emptyState = document.getElementById('emptyState')
+      const grid = document.getElementById('projectsGrid');
+      const emptyStateBlock = document.getElementById('emptyStateBlock');
+      const noSearchResults = document.getElementById('noSearchResults');
+      const projectsCount = document.getElementById('projectsCount');
+      const searchRow = document.getElementById('searchRow');
+      const search = searchInput.value.toLowerCase();
 
-        while (grid.firstChild) grid.removeChild(grid.firstChild)
+      grid.innerHTML = '';
+      
+      if (currentProjects.length > 0) {
+        projectsCount.textContent = `${currentProjects.length} ${getPlural(currentProjects.length, 'проект', 'проекта', 'проектов')}`;
+        projectsCount.style.display = 'block';
+      } else {
+        projectsCount.style.display = 'none';
+      }
 
-        if (currentProjects.length === 0) {
-            emptyState.style.display = 'block'
-            return
-        }
+      if (currentProjects.length > 3) {
+        searchRow.style.display = 'block';
+      } else {
+        searchRow.style.display = 'none';
+      }
 
-        emptyState.style.display = 'none'
+      if (currentProjects.length === 0) {
+        emptyStateBlock.style.display = 'block';
+        noSearchResults.style.display = 'none';
+        return;
+      }
+      
+      emptyStateBlock.style.display = 'none';
 
-        currentProjects.forEach(proj => {
-            const card = document.createElement('div')
-            card.className = 'projectCard'
+      const filtered = currentProjects.filter(p => p.name.toLowerCase().includes(search));
 
-            const cardMain = document.createElement('div')
-            cardMain.className = 'projectCardMain'
-            cardMain.addEventListener('click', () => {
-            window.location.href = `./dashboard.html?projectId=${proj.id}`
-            })
+      if (filtered.length === 0) {
+        noSearchResults.style.display = 'block';
+      } else {
+        noSearchResults.style.display = 'none';
+      }
 
-            const nameSpan = document.createElement('span')
-            nameSpan.className = 'projectName'
-            nameSpan.textContent = proj.name
+      filtered.forEach(proj => {
+        const card = document.createElement('div');
+        card.className = 'projectCard';
+        
+        const cardMain = document.createElement('div');
+        cardMain.className = 'projectCardMain';
+        cardMain.onclick = () => window.location.href = `./dashboard.html?projectId=${proj.id}`;
 
-            const arrow = document.createElement('span')
-            arrow.className = 'projectArrow'
-            arrow.textContent = '→'
+        const nameRow = document.createElement('div');
+        nameRow.className = 'projectNameRow';
+        nameRow.innerHTML = `<span class="projectName">${escapeHtml(proj.name)}</span>
+          <button class="renameIcon" title="Переименовать" onclick="event.stopPropagation(); openRenameModal('${proj.id}', '${escapeHtml(proj.name)}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>`;
 
-            cardMain.appendChild(nameSpan)
-            cardMain.appendChild(arrow)
+        const arrow = document.createElement('span');
+        arrow.className = 'projectArrow';
+        arrow.textContent = '→';
 
-            const cardActions = document.createElement('div')
-            cardActions.className = 'projectCardActions'
+        cardMain.appendChild(nameRow);
+        cardMain.appendChild(arrow);
 
-            const openBtn = document.createElement('button')
-            openBtn.className = 'buttonSmall'
-            openBtn.textContent = 'Открыть'
-            openBtn.addEventListener('click', () => {
-            window.location.href = `./dashboard.html?projectId=${proj.id}`
-            })
+        const actionsRow = document.createElement('div');
+        actionsRow.className = 'projectCardActions';
+        actionsRow.style.marginTop = 'auto';
+        actionsRow.style.paddingTop = '12px';
+        actionsRow.style.display = 'flex';
+        actionsRow.style.justifyContent = 'space-between';
+        actionsRow.style.alignItems = 'center';
 
-            cardActions.appendChild(openBtn)
+        const isVisible = visibleKeys.has(proj.id);
+        const apiKeyDisplay = document.createElement('span');
+        apiKeyDisplay.className = 'apiKeyDisplay';
+        apiKeyDisplay.textContent = isVisible ? proj.apiKey : 'proj_••••••••••••••••';
 
-            card.appendChild(cardMain)
-            card.appendChild(cardActions)
-            grid.appendChild(card)
-        })
-        }
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'apiKeyActions';
+        
+        buttonsDiv.innerHTML = `
+          <button onclick="toggleKey('${proj.id}')" title="${isVisible ? 'Скрыть ключ' : 'Показать ключ'}">
+            ${isVisible ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>' : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'}
+          </button>
+          <button onclick="copyToClipboard('${proj.apiKey}'); this.style.color='#16a34a'; setTimeout(() => this.style.color='', 2000);" title="Скопировать">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+          <button onclick="openApiKeyModal('${proj.id}')" title="Управление ключом">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.87"/></svg>
+          </button>
+        `;
 
-    function showModal(project) {
-        currentCreatedProject = project
+        actionsRow.appendChild(apiKeyDisplay);
+        actionsRow.appendChild(buttonsDiv);
 
-        document.getElementById('modalApiKey').textContent = project.apiKey
-
-        const snippet = document.getElementById('modalSnippet')
-        snippet.textContent = `<script>\n  analytics.init('${project.apiKey}')\n<\/script>`
-
-        document.getElementById('goToDashboardBtn').onclick = () => {
-            window.location.href = `./dashboard.html?projectId=${project.id}`
-        }
-
-        document.getElementById('modalOverlay').style.display = 'flex'
+        card.appendChild(cardMain);
+        card.appendChild(actionsRow);
+        grid.appendChild(card);
+      });
     }
 
-    function closeModal() {
-      document.getElementById('modalOverlay').style.display = 'none'
-      currentCreatedProject = null
+    async function createProject() {
+      const name = newProjectNameInput.value.trim();
+      const createBtn = document.getElementById('createBtn');
+      if (!name) return;
+
+      createBtn.disabled = true;
+      createBtn.textContent = 'Создание...';
+
+      try {
+        const res = await authFetch(`${AUTH_URL}/api/projects`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        
+        const created = await res.json();
+        currentProjects.push(created);
+        newProjectNameInput.value = '';
+        renderProjects();
+        showCreateSuccessModal(created);
+      } catch (err) {
+        showErrorBanner("Не удалось создать проект");
+      } finally {
+        createBtn.disabled = false;
+        createBtn.textContent = 'Создать';
+      }
     }
 
-    document.getElementById('copyBtn').addEventListener('click', function() {
-      if (!currentCreatedProject) return
-      navigator.clipboard.writeText(currentCreatedProject.apiKey)
-      this.textContent = 'Скопировано ✓'
-      setTimeout(() => this.textContent = 'Скопировать', 2000)
-    })
+    // --- Delete Account ---
+    function showDeleteAccountModal() { document.getElementById('deleteAccountModal').style.display = 'flex'; }
+    function closeDeleteAccountModal() { document.getElementById('deleteAccountModal').style.display = 'none'; }
+    
+    async function deleteAccount() {
+      const btn = document.getElementById('confirmDeleteAccountBtn');
+      btn.disabled = true;
+      btn.textContent = 'Удаление...';
+      try {
+        await authFetch(`${AUTH_URL}/api/users/me`, { method: 'DELETE' });
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        window.location.href = './index.html';
+      } catch (err) {
+        showErrorBanner("Не удалось удалить аккаунт");
+        btn.disabled = false;
+        btn.textContent = 'Удалить аккаунт';
+        closeDeleteAccountModal();
+      }
+    }
 
-    loadProjects()
+    // --- Rename ---
+    function openRenameModal(id, currentName) {
+      renameTarget = id;
+      const input = document.getElementById('renameInput');
+      input.value = currentName;
+      document.getElementById('renameModal').style.display = 'flex';
+      setTimeout(() => input.focus(), 100);
+    }
+    function closeRenameModal() { renameTarget = null; document.getElementById('renameModal').style.display = 'none'; }
+    
+    async function confirmRename() {
+      if (!renameTarget) return;
+      const input = document.getElementById('renameInput');
+      const newName = input.value.trim();
+      if (!newName) return;
+
+      const btn = document.getElementById('confirmRenameBtn');
+      btn.disabled = true;
+      btn.textContent = 'Сохранение...';
+
+      try {
+        const res = await authFetch(`${AUTH_URL}/api/projects/${renameTarget}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName })
+        });
+        const updated = await res.json();
+        currentProjects = currentProjects.map(p => p.id === updated.id ? updated : p);
+        renderProjects();
+        closeRenameModal();
+      } catch (err) {
+        showErrorBanner("Не удалось переименовать проект");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Сохранить';
+      }
+    }
+
+    // --- API Key Modal ---
+    function openApiKeyModal(id) {
+      apiKeyTarget = currentProjects.find(p => p.id === id);
+      document.getElementById('apiKeyModalProjectName').textContent = apiKeyTarget.name;
+      document.getElementById('apiKeyModalValue').textContent = apiKeyTarget.apiKey;
+      hideRegenerateConfirm();
+      document.getElementById('apiKeyModal').style.display = 'flex';
+    }
+    function closeApiKeyModal() { apiKeyTarget = null; document.getElementById('apiKeyModal').style.display = 'none'; }
+    
+    function copyModalApiKey() {
+      if(!apiKeyTarget) return;
+      copyToClipboard(apiKeyTarget.apiKey);
+      const btn = document.getElementById('apiKeyModalCopyBtn');
+      btn.textContent = 'Скопировано ✓';
+      setTimeout(() => btn.textContent = 'Скопировать', 2000);
+    }
+
+    function showRegenerateConfirm() {
+      document.getElementById('triggerRegenerateBtn').style.display = 'none';
+      document.getElementById('regenerateConfirmUI').style.display = 'block';
+    }
+    function hideRegenerateConfirm() {
+      document.getElementById('triggerRegenerateBtn').style.display = 'block';
+      document.getElementById('regenerateConfirmUI').style.display = 'none';
+    }
+
+    async function doRegenerate() {
+      if(!apiKeyTarget) return;
+      const btn = document.getElementById('doRegenerateBtn');
+      btn.disabled = true;
+      btn.textContent = 'Генерация...';
+
+      try {
+        const res = await authFetch(`${AUTH_URL}/api/projects/${apiKeyTarget.id}/api-key/regenerate`, {
+          method: 'POST'
+        });
+        const updated = await res.json();
+        currentProjects = currentProjects.map(p => p.id === updated.id ? updated : p);
+        apiKeyTarget = updated;
+        document.getElementById('apiKeyModalValue').textContent = updated.apiKey;
+        renderProjects();
+        hideRegenerateConfirm();
+      } catch (err) {
+        showErrorBanner("Не удалось перегенерировать ключ");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Да, перегенерировать';
+      }
+    }
+
+    // --- Create Success Modal ---
+    function showCreateSuccessModal(project) {
+      document.getElementById('createdApiKey').textContent = project.apiKey;
+      document.getElementById('createdSnippet').textContent = `import { analytics } from '@mcollector/sdk'\n\nanalytics.init('${project.apiKey}')`;
+      document.getElementById('goToDashboardBtn').onclick = () => window.location.href = `./dashboard.html?projectId=${project.id}`;
+      
+      const copyBtn = document.getElementById('createdCopyBtn');
+      copyBtn.onclick = () => {
+        copyToClipboard(project.apiKey);
+        copyBtn.textContent = 'Скопировано ✓';
+        setTimeout(() => copyBtn.textContent = 'Скопировать', 2000);
+      };
+
+      document.getElementById('createSuccessModal').style.display = 'flex';
+    }
+    function closeCreateSuccessModal() { document.getElementById('createSuccessModal').style.display = 'none'; }
+
+
+    // --- Utils ---
+    function toggleKey(id) {
+      if (visibleKeys.has(id)) visibleKeys.delete(id);
+      else visibleKeys.add(id);
+      renderProjects();
+    }
+
+    function showErrorBanner(msg) {
+      const banner = document.getElementById('errorBanner');
+      banner.textContent = msg;
+      banner.style.display = 'block';
+      setTimeout(() => banner.style.display = 'none', 3000);
+    }
+
+    function escapeHtml(unsafe) {
+      return (unsafe || '').toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function getPlural(n, one, few, many) {
+      if (n % 10 === 1 && n % 100 !== 11) return one;
+      if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return few;
+      return many;
+    }
+
+    loadData();
   </script>
 </body>
 </html>

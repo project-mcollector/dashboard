@@ -47,6 +47,8 @@
             <p class="linkText">
                 Нет аккаунта?
                 <a href="./register.html" class="link">Зарегистрироваться</a>
+                <br><br>
+                <a href="./forgot-password.html" class="link">Забыли пароль?</a>
             </p>
         </form>
     </div>
@@ -92,7 +94,8 @@
             }
 
             const data = await res.json();
-            setToken(data.accessToken);
+            setToken(data.accessToken || data.AccessToken);
+            setRefreshToken(data.refreshToken || data.RefreshToken);
             window.location.href = './projects.html';
         } catch (err) {
             showError('loginError', 'Ошибка соединения с сервером');

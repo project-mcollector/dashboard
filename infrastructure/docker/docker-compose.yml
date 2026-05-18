@@ -50,7 +50,11 @@ services:
         condition: service_started
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=mcollector;Username=app;Password=app
+      - Jwt__Secret=supersecret_and_long_jwt_secret_key_12345!
+      - RESEND_APITOKEN=re_123456789
+
       - Kafka__BootstrapServers=kafka:29092
+      - AllowedOrigins=http://localhost:3000,http://localhost:8000,http://localhost:8001,http://localhost:5003,http://127.0.0.1:8000,http://127.0.0.1:8001,http://127.0.0.1:5500,http://127.0.0.1:3000,http://127.0.0.1:5003
 
   analytics:
     build:
@@ -65,7 +69,11 @@ services:
         condition: service_started
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=mcollector;Username=app;Password=app
+      - Jwt__Secret=supersecret_and_long_jwt_secret_key_12345!
+      - RESEND_APITOKEN=re_123456789
+
       - Kafka__BootstrapServers=kafka:29092
+      - AllowedOrigins=http://localhost:3000,http://localhost:8000,http://localhost:8001,http://localhost:5003,http://127.0.0.1:8000,http://127.0.0.1:8001,http://127.0.0.1:5500,http://127.0.0.1:3000,http://127.0.0.1:5003
 
   identity:
     build:
@@ -80,7 +88,11 @@ services:
         condition: service_started
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=mcollector;Username=app;Password=app
+      - Jwt__Secret=supersecret_and_long_jwt_secret_key_12345!
+      - RESEND_APITOKEN=re_123456789
+      - FrontendUrl=http://127.0.0.1:8001
       - Kafka__BootstrapServers=kafka:29092
+      - AllowedOrigins=http://localhost:3000,http://localhost:8000,http://localhost:8001,http://localhost:5003,http://127.0.0.1:8000,http://127.0.0.1:8001,http://127.0.0.1:5500,http://127.0.0.1:3000,http://127.0.0.1:5003
 
   processor:
     build:
@@ -93,17 +105,9 @@ services:
         condition: service_started
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=mcollector;Username=app;Password=app
-      - Kafka__BootstrapServers=kafka:29092
+      - Jwt__Secret=supersecret_and_long_jwt_secret_key_12345!
+      - RESEND_APITOKEN=re_123456789
 
-  web:
-    build:
-      context: ../../
-      dockerfile: apps/web/Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - ingestion
-      - analytics
-      - identity
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:5001
+      - Kafka__BootstrapServers=kafka:29092
+      - AllowedOrigins=http://localhost:3000,http://localhost:8000,http://localhost:5003,http://127.0.0.1:8000,http://127.0.0.1:5500,http://127.0.0.1:3000,http://127.0.0.1:5003
+

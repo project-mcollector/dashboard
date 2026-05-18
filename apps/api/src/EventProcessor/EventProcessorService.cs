@@ -1,6 +1,10 @@
+using System.Data.Common;
+using System.Diagnostics;
 using Contracts.Messages;
 using Infrastructure.Messaging;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using EventProcessor.Contracts;
 
 namespace EventProcessor;
@@ -25,17 +29,9 @@ public class EventProcessorService : IEventConsumer<RawEvent>
         if (!Validator.TryValidateObject(message, validatorContext, validationList, true))
         {
             logger.LogWarning(
-                "Invalid event {EventId}. Errors: {Errors}",
-                message.EventId,
-                string.Join(", ", validationList.Select(x => x.ErrorMessage))
-                );
-            return;
-        }
-
-        var isDuplicate = await repository.ExistsByEventIdAsync(message.EventId, cancellationToken);
-        if (isDuplicate)
-        {
-            logger.LogInformation("Event {EventId} was already processed. Skipping.", message.EventId);
+                "Dropping invalid event {EventId} for project {ProjectId}. Errors: {Errors}",
+                message.EventId, message.ProjectId,
+                string.Join(", ", validationList.Select(x => x.ErrorMessage)));
             return;
         }
 
@@ -47,18 +43,34 @@ public class EventProcessorService : IEventConsumer<RawEvent>
             Timestamp = message.ClientTimestamp != default ? message.ClientTimestamp : message.ServerTimestamp,
             UserId = message.UserId,
             SessionId = message.SessionId,
-            Properties = message.Properties,
-
-            // We are not parsing IP and UserAgent yet, so we leave them empty or null:
+            PropertiesJson = message.Properties is null ? null : JsonSerializer.Serialize(message.Properties),
             EventCountry = null,
             EventBrowser = null,
-            // etc. (other optional properties)
-
             ProcessedAt = DateTimeOffset.UtcNow
         };
 
-        await repository.AddAsync(processedEvent, cancellationToken);
+        var sw = Stopwatch.StartNew();
+        try
+        {
+            await repository.AddAsync(processedEvent, cancellationToken);
+        }
+        catch (DbUpdateException ex) when (IsUniqueViolation(ex))
+        {
+            logger.LogWarning("Duplicate event {EventId} for project {ProjectId} — skipping", message.EventId, message.ProjectId);
+            return;
+        }
+        sw.Stop();
 
-        logger.LogInformation("Successfully processed event {EventId}", message.EventId);
+        logger.LogInformation(
+            "DB write: event {EventId} '{EventName}' for project {ProjectId} in {ElapsedMs}ms",
+            message.EventId, message.EventName, message.ProjectId, sw.ElapsedMilliseconds);
+    }
+
+    private static bool IsUniqueViolation(DbUpdateException ex)
+    {
+        return ex.InnerException is DbException dbEx
+            && (dbEx.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase)
+                || dbEx.Message.Contains("unique", StringComparison.OrdinalIgnoreCase)
+                || dbEx.Message.Contains("23505"));
     }
 }

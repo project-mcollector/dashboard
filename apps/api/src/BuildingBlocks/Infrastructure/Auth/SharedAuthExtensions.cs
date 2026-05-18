@@ -8,10 +8,14 @@ namespace Infrastructure.Auth;
 
 public static class SharedAuthExtensions
 {
+    public const string Issuer = "mcollector.identity.api";
+    public const string Audience = "mcollector.api";
+
     public static IServiceCollection AddSharedAuthentication(this IServiceCollection services,
         IConfiguration configuration)
     {
-        var jwtSecret = configuration["Jwt:Secret"] ?? "super-secret-default-key-for-dev-mcollector";
+        var jwtSecret = configuration["Jwt:Secret"]
+            ?? throw new InvalidOperationException("Jwt:Secret is not configured");
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -19,8 +23,10 @@ public static class SharedAuthExtensions
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidIssuer = Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = Audience,
                     ClockSkew = TimeSpan.Zero
                 };
             });

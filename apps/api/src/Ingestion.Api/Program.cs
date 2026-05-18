@@ -1,22 +1,34 @@
 using Contracts.Messages;
-using Ingestion.Api.Services;
+using Infrastructure.Auth;
 using Infrastructure.Messaging;
+using Ingestion.Api.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Allow the JS SDK to send requests from any origin
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
     p.AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()));
 
-// Stub publisher — replace with Kafka implementation when available
-builder.Services.AddScoped<IEventPublisher, StubEventPublisher>();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured");
 
-// Register the ingestion service
+builder.Services.AddDbContext<IdentityValidationContext>(options =>
+    options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IApiKeyValidator, ApiKeyValidator>();
+builder.Services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
 builder.Services.AddScoped<IIngestionService, IngestionService>();
+
+builder.Services.AddApiKeyAuthentication();
+
+builder.Services.AddAuthorizationBuilder()
+    .SetDefaultPolicy(new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build());
 
 var app = builder.Build();
 

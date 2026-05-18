@@ -1,52 +1,39 @@
-using Identity.Api.Infrastructure.Identity;
-using Identity.Api.Infrastructure.Persistence;
+using Identity.Api.Application.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Identity.Api.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [Authorize]
-public class UsersController(UserManager<ApplicationUser> userManager, IdentityAppDbContext dbContext)
-    : ControllerBase
+[EnableRateLimiting("api")]
+public class UsersController(IUsersService usersService) : ApiControllerBase
 {
     [HttpGet("me")]
-    [ProducesResponseType(typeof(UserProfileResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetCurrentUser()
+    public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
     {
-        var user = await userManager.GetUserAsync(User);
-        if (user is null) return NotFound();
+        if (string.IsNullOrEmpty(UserId))
+            return Unauthorized();
 
-        var userWithProjects = await dbContext.Users
-            .Include(u => u.Projects)
-            .FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        return Ok(new UserProfileResponse
-        {
-            Id = userWithProjects?.Id ?? string.Empty,
-            Email = userWithProjects?.Email,
-            UserName = userWithProjects?.UserName,
-            Projects = userWithProjects?.Projects.Select(p => new UserProjectDto { Id = p.Id, Name = p.Name, Description = p.Description }).ToList() ?? new List<UserProjectDto>()
-        });
+        var result = await usersService.GetCurrentUserAsync(UserId, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
     }
-}
 
-public class UserProfileResponse
-{
-    public string Id { get; set; } = string.Empty;
-    public string? Email { get; set; }
-    public string? UserName { get; set; }
-    public List<UserProjectDto> Projects { get; set; } = new();
-}
+    [HttpDelete("me")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteAccount(CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(UserId))
+            return Unauthorized();
 
-public class UserProjectDto
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+        var result = await usersService.DeleteAccountAsync(UserId, cancellationToken);
+        return result.IsSuccess ? NoContent() : NotFound();
+    }
 }

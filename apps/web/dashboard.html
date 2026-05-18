@@ -79,17 +79,17 @@
 
                     const [overviewRes, eventsRes, usersRes] =
                         await Promise.all([
-                            fetch(
+                            authFetch(
                                 `${base}/overview?projectId=${projectId}&from=${from}&to=${to}`,
-                                { headers },
+                               
                             ),
-                            fetch(
+                            authFetch(
                                 `${base}/events/timeseries?projectId=${projectId}&from=${from}&to=${to}&interval=day`,
-                                { headers },
+                               
                             ),
-                            fetch(
+                            authFetch(
                                 `${base}/users/timeseries?projectId=${projectId}&from=${from}&to=${to}&interval=day`,
-                                { headers },
+                               
                             ),
                         ]);
 
