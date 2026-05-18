@@ -361,3 +361,146 @@ header {
     display: flex;
     gap: 12px;
 }
+
+.page {
+  min-height: 100vh;
+  background-color: #fafafa;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #18181b;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.projectCard {
+  background: white;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.projectCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.projectCardMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+}
+
+.projectName {
+  font-size: 15px;
+  font-weight: 500;
+  color: #18181b;
+}
+
+.projectArrow {
+  color: #a1a1aa;
+  font-size: 18px;
+}
+
+.projectCardActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-top: 1px solid #f4f4f5;
+}
+
+.createSection {
+  background: white;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 480px;
+}
+
+.createTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #18181b;
+  margin: 0 0 16px 0;
+}
+
+.createRow {
+  display: flex;
+  gap: 12px;
+}
+
+.emptyState {
+  color: #71717a;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.buttonOutline {
+  background-color: white;
+  color: #18181b;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.buttonOutline:hover {
+  background-color: #f4f4f5;
+}
+
+.skeletonCard {
+  height: 72px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 20px 16px;
+  }
+  .projectsGrid {
+    grid-template-columns: 1fr;
+  }
+  .createSection {
+    max-width: 100%;
+  }
+  .createRow {
+    flex-direction: column;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}

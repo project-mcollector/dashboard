@@ -1,217 +1,186 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>MCollector - Мои проекты</title>
-        <link rel="stylesheet" href="./src/css/style.css" />
-    </head>
-    <body>
-        <div class="app-container">
-            <header>
-                <h1>Мои проекты</h1>
-                <button onclick="logout()" class="button-link">Выйти</button>
-            </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCollector - Мои проекты</title>
+  <link rel="stylesheet" href="./src/css/style.css">
+</head>
+<body>
+  <div class="page">
 
-            <main>
-                <div id="loadingIndicator">Загрузка...</div>
+    <div class="header">
+      <h1 class="title">Мои проекты</h1>
+      <div class="userInfo">
+        <button onclick="logout()" class="buttonOutline">Выйти</button>
+      </div>
+    </div>
 
-                <div id="projectsContainer" style="display: none">
-                    <div id="noProjectsMessage" style="display: none">
-                        <p>У вас пока нет проектов</p>
-                    </div>
+    <div id="loadingContainer">
+      <div class="skeletonCard"></div>
+      <div class="skeletonCard" style="margin-top: 16px;"></div>
+      <div class="skeletonCard" style="margin-top: 16px;"></div>
+    </div>
 
-                    <div id="projectsList" class="projects-list">
-                        <!-- Projects injected here -->
-                    </div>
+    <div id="projectsContainer" style="display: none;">
 
-                    <h2>Создать новый проект</h2>
-                    <div
-                        class="form"
-                        style="max-width: 400px; margin-top: 1rem"
-                    >
-                        <input
-                            type="text"
-                            id="newProjectName"
-                            placeholder="Название проекта"
-                            class="input"
-                        />
-                        <button
-                            id="createBtn"
-                            class="button"
-                            onclick="createProject()"
-                        >
-                            Создать
-                        </button>
-                    </div>
-                </div>
-            </main>
+      <p id="emptyState" class="emptyState" style="display: none;">
+        У вас пока нет проектов
+      </p>
+
+      <div id="projectsGrid" class="projectsGrid"></div>
+
+      <div class="createSection">
+        <p class="createTitle">Создать новый проект</p>
+        <div class="createRow">
+          <input
+            type="text"
+            id="newProjectName"
+            placeholder="Название проекта"
+            class="input"
+          />
+          <button id="createBtn" class="button" onclick="createProject()">
+            Создать
+          </button>
         </div>
+      </div>
 
-        <div id="createdModal" class="modal">
-            <div class="modal-content">
-                <h2>Проект создан!</h2>
-                <p>Ваш API-ключ:</p>
-                <code id="modalApiKey"></code>
-                <button
-                    class="button button-secondary"
-                    onclick="copyApiKey()"
-                    style="margin-top: 10px; margin-bottom: 20px"
-                >
-                    Скопировать
-                </button>
+    </div>
+  </div>
 
-                <p>Добавьте этот код на ваш сайт:</p>
-                <pre id="modalSnippet"></pre>
+  <div id="modalOverlay" class="modalOverlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modalTitle">Проект создан!</h2>
+      <p class="modalSubtitle">
+        Установите SDK на ваш сайт чтобы начать собирать данные
+      </p>
 
-                <div style="display: flex; gap: 10px; margin-top: 2rem">
-                    <button id="goToDashboardBtn" class="button">
-                        Перейти в дашборд
-                    </button>
-                    <button
-                        class="button button-secondary"
-                        onclick="closeModal()"
-                    >
-                        Закрыть
-                    </button>
-                </div>
-            </div>
-        </div>
+      <label class="label">Ваш API-ключ</label>
+      <div class="apiKeyBox">
+        <span class="apiKeyText" id="modalApiKey"></span>
+        <button class="buttonSmall" id="copyBtn">Скопировать</button>
+      </div>
 
-        <script src="./src/js/main.js"></script>
-        <script>
-            const token = getToken();
-            if (!token) {
-                window.location.href = "./index.html";
-            }
+      <label class="label">Добавьте на ваш сайт</label>
+      <div class="codeBlock" id="modalSnippet"></div>
 
-            let currentProjects = [];
-            let currentCreatedProject = null;
+      <div class="modalButtons">
+        <button class="button" id="goToDashboardBtn">Перейти в дашборд</button>
+        <button class="buttonOutline" onclick="closeModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
 
-            async function loadProjects() {
-                try {
-                    const res = await fetch(`${AUTH_URL}/projects`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
+  <script src="./src/js/main.js"></script>
+  <script>
+    const token = getToken()
+    if (!token) window.location.href = './index.html'
 
-                    if (res.status === 401) {
-                        logout();
-                        return;
-                    }
+    let currentProjects = []
+    let currentCreatedProject = null
 
-                    const data = await res.json();
-                    currentProjects = data;
-                    renderProjects();
-                } catch (err) {
-                    console.error(err);
-                } finally {
-                    document.getElementById("loadingIndicator").style.display =
-                        "none";
-                    document.getElementById("projectsContainer").style.display =
-                        "block";
-                }
-            }
+    async function loadProjects() {
+      try {
+        const res = await fetch(`${AUTH_URL}/api/projects`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
 
-            function renderProjects() {
-                const listEl = document.getElementById("projectsList");
-                const noProjEl = document.getElementById("noProjectsMessage");
+        if (res.status === 401) {
+          logout()
+          return
+        }
 
-                listEl.replaceChildren();
+        const data = await res.json()
+        currentProjects = data
+        renderProjects()
+      } catch (err) {
+        console.error(err)
+      } finally {
+        document.getElementById('loadingContainer').style.display = 'none'
+        document.getElementById('projectsContainer').style.display = 'block'
+      }
+    }
 
-                if (currentProjects.length === 0) {
-                    noProjEl.style.display = "block";
-                } else {
-                    noProjEl.style.display = "none";
-                    currentProjects.forEach((proj) => {
-                        const item = document.createElement("div");
-                        item.className = "project-item";
+    function renderProjects() {
+        const grid = document.getElementById('projectsGrid')
+        const emptyState = document.getElementById('emptyState')
 
-                        const nameSpan = document.createElement("span");
-                        nameSpan.textContent = proj.name;
-                        nameSpan.style.fontWeight = "500";
+        while (grid.firstChild) grid.removeChild(grid.firstChild)
 
-                        const openBtn = document.createElement("button");
-                        openBtn.className = "button";
-                        openBtn.style.width = "auto";
-                        openBtn.style.marginTop = "0";
-                        openBtn.textContent = "Открыть";
-                        openBtn.onclick = () => {
-                            window.location.href = `./dashboard.html?projectId=${proj.id}`;
-                        };
+        if (currentProjects.length === 0) {
+            emptyState.style.display = 'block'
+            return
+        }
 
-                        item.appendChild(nameSpan);
-                        item.appendChild(openBtn);
-                        listEl.appendChild(item);
-                    });
-                }
-            }
+        emptyState.style.display = 'none'
 
-            async function createProject() {
-                const input = document.getElementById("newProjectName");
-                const name = input.value.trim();
-                if (!name) return;
+        currentProjects.forEach(proj => {
+            const card = document.createElement('div')
+            card.className = 'projectCard'
 
-                const btn = document.getElementById("createBtn");
-                btn.disabled = true;
-                btn.textContent = "Создание...";
+            const cardMain = document.createElement('div')
+            cardMain.className = 'projectCardMain'
+            cardMain.addEventListener('click', () => {
+            window.location.href = `./dashboard.html?projectId=${proj.id}`
+            })
 
-                try {
-                    const res = await fetch(`${AUTH_URL}/projects`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ name }),
-                    });
+            const nameSpan = document.createElement('span')
+            nameSpan.className = 'projectName'
+            nameSpan.textContent = proj.name
 
-                    if (res.ok) {
-                        const created = await res.json();
-                        currentProjects.push(created);
-                        input.value = "";
-                        renderProjects();
-                        showCreatedModal(created);
-                    }
-                } catch (err) {
-                    console.error(err);
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = "Создать";
-                }
-            }
+            const arrow = document.createElement('span')
+            arrow.className = 'projectArrow'
+            arrow.textContent = '→'
 
-            function showCreatedModal(project) {
-                currentCreatedProject = project;
-                document.getElementById("modalApiKey").textContent =
-                    project.apiKey;
-                document.getElementById("modalSnippet").textContent =
-                    `<script>\n  analytics.init('${project.apiKey}')\n<\/script>`;
+            cardMain.appendChild(nameSpan)
+            cardMain.appendChild(arrow)
 
-                document.getElementById("goToDashboardBtn").onclick = () => {
-                    window.location.href = `./dashboard.html?projectId=${project.id}`;
-                };
+            const cardActions = document.createElement('div')
+            cardActions.className = 'projectCardActions'
 
-                document.getElementById("createdModal").classList.add("active");
-            }
+            const openBtn = document.createElement('button')
+            openBtn.className = 'buttonSmall'
+            openBtn.textContent = 'Открыть'
+            openBtn.addEventListener('click', () => {
+            window.location.href = `./dashboard.html?projectId=${proj.id}`
+            })
 
-            function closeModal() {
-                document
-                    .getElementById("createdModal")
-                    .classList.remove("active");
-                currentCreatedProject = null;
-            }
+            cardActions.appendChild(openBtn)
 
-            function copyApiKey() {
-                if (currentCreatedProject) {
-                    navigator.clipboard
-                        .writeText(currentCreatedProject.apiKey)
-                        .then(() => {
-                            alert("API ключ скопирован!");
-                        });
-                }
-            }
+            card.appendChild(cardMain)
+            card.appendChild(cardActions)
+            grid.appendChild(card)
+        })
+        }
 
-            loadProjects();
-        </script>
-    </body>
+    function showModal(project) {
+        currentCreatedProject = project
+
+        document.getElementById('modalApiKey').textContent = project.apiKey
+
+        const snippet = document.getElementById('modalSnippet')
+        snippet.textContent = `<script>\n  analytics.init('${project.apiKey}')\n<\/script>`
+
+        document.getElementById('goToDashboardBtn').onclick = () => {
+            window.location.href = `./dashboard.html?projectId=${project.id}`
+        }
+
+        document.getElementById('modalOverlay').style.display = 'flex'
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none'
+      currentCreatedProject = null
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', function() {
+      if (!currentCreatedProject) return
+      navigator.clipboard.writeText(currentCreatedProject.apiKey)
+      this.textContent = 'Скопировано ✓'
+      setTimeout(() => this.textContent = 'Скопировать', 2000)
+    })
+
+    loadProjects()
+  </script>
+</body>
 </html>
