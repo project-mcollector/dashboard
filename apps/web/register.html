@@ -1,145 +1,209 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCollector - Регистрация</title>
-  <link rel="stylesheet" href="./src/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCollector - Регистрация</title>
+    <link rel="stylesheet" href="./src/css/style.css">
 </head>
 <body>
-  <div class="page">
+<div class="page">
     <div class="card">
-      <h1 class="title">MCollector</h1>
-      <p class="subtitle">Создайте аккаунт</p>
+        <h1 class="title">MCollector</h1>
+        <p class="subtitle">Создайте аккаунт</p>
 
-      <form id="registerForm" class="form">
-        <div id="registerError" class="error"></div>
+        <form id="registerForm" class="form">
+            <div id="registerError" class="error"></div>
 
-        <div>
-          <label class="label" for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            placeholder="you@example.com"
-            class="input"
-            required
-          />
-        </div>
+            <div>
+                <label class="label" for="email">Email</label>
+                <input type="email" id="email" placeholder="you@example.com" class="input" required />
+            </div>
 
-        <div>
-          <label class="label" for="organizationName">Название организации</label>
-          <input
-            type="text"
-            id="organizationName"
-            placeholder="Моя компания"
-            class="input"
-            required
-          />
-        </div>
+            <div>
+                <label class="label" for="organizationName">Название организации</label>
+                <input type="text" id="organizationName" placeholder="Моя компания" class="input" required />
+            </div>
 
-        <div>
-          <label class="label" for="password">Пароль</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="••••••••"
-            class="input"
-            minlength="8"
-            required
-          />
-        </div>
+            <div>
+                <label class="label" for="password">Пароль</label>
+                <div class="passwordWrapper">
+                    <input type="password" id="password" placeholder="••••••••" class="input" required />
+                    <button type="button" class="passwordToggle" id="togglePassword">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+                <div id="passwordHints" style="display:none; margin-top:8px; display:flex; flex-direction:column; gap:4px;">
+                    <div class="hint" id="hint-length">○ Не менее 6 символов</div>
+                    <div class="hint" id="hint-lower">○ Строчная буква (a-z)</div>
+                    <div class="hint" id="hint-upper">○ Заглавная буква (A-Z)</div>
+                    <div class="hint" id="hint-special">○ Специальный символ (!@#$)</div>
+                </div>
+            </div>
 
-        <div>
-          <label class="label" for="confirmPassword">Подтвердите пароль</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            placeholder="••••••••"
-            class="input"
-            required
-          />
-        </div>
+            <div>
+                <label class="label" for="confirmPassword">Подтвердите пароль</label>
+                <div class="passwordWrapper">
+                    <input type="password" id="confirmPassword" placeholder="••••••••" class="input" required />
+                    <button type="button" class="passwordToggle" id="toggleConfirmPassword">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+            </div>
 
-        <button type="submit" class="button" id="submitBtn">
-          Зарегистрироваться
-        </button>
+            <button type="submit" class="button" id="submitBtn">Зарегистрироваться</button>
 
-        <p class="linkText">
-          Уже есть аккаунт?
-          <a href="./index.html" class="link">Войти</a>
-        </p>
-      </form>
+            <p class="linkText">
+                Уже есть аккаунт?
+                <a href="./index.html" class="link">Войти</a>
+            </p>
+        </form>
     </div>
-  </div>
+</div>
 
-  <script src="./src/js/main.js"></script>
-  <script>
-    document.getElementById('registerForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const email = document.getElementById('email').value;
-      const organizationName = document.getElementById('organizationName').value;
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const submitBtn = document.getElementById('submitBtn');
-      
-      hideError('registerError');
-      
-      if (password !== confirmPassword) {
-        showError('registerError', 'Пароли не совпадают');
-        return;
-      }
-      
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Регистрация...';
-      
-      try {
-        const res = await fetch(`${AUTH_URL}/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, organizationName })
+<div id="modalOverlay" class="modalOverlay" style="display:none;">
+    <div class="modal">
+        <h2 class="modalTitle">Проект создан!</h2>
+        <p class="modalSubtitle">Сохраните ваш API-ключ — он понадобится для установки SDK на сайт</p>
+
+        <label class="label">Ваш API-ключ</label>
+        <div class="apiKeyBox">
+            <span class="apiKeyText" id="apiKeyText"></span>
+            <button class="buttonSmall" id="copyBtn">Скопировать</button>
+        </div>
+
+        <label class="label">Добавьте на ваш сайт</label>
+        <div class="codeBlock" id="codeBlock"></div>
+
+        <div class="modalButtons">
+            <button class="button" id="goToDashboardBtn">Перейти в дашборд</button>
+            <button class="buttonOutline" id="goToProjectsBtn">К проектам</button>
+        </div>
+    </div>
+</div>
+
+<script src="./src/js/main.js"></script>
+<script>
+    if (getToken()) window.location.href = './projects.html';
+
+    function setupToggle(toggleId, inputId) {
+        const input = document.getElementById(inputId);
+        const btn = document.getElementById(toggleId);
+        const eyeOpen = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        const eyeClosed = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+        btn.addEventListener('click', function() {
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.innerHTML = isPassword ? eyeClosed : eyeOpen;
         });
-        
-        if (!res.ok) {
-          let msg = 'Ошибка регистрации';
-          try {
-            const errData = await res.json();
-            if (errData.errors) {
-              const firstKey = Object.keys(errData.errors)[0];
-              if (firstKey) msg = errData.errors[firstKey][0];
-            } else if (errData.title) {
-              msg = errData.title;
-            }
-          } catch (e) {}
-          
-          showError('registerError', msg);
-          return;
+    }
+    setupToggle('togglePassword', 'password');
+    setupToggle('toggleConfirmPassword', 'confirmPassword');
+
+    const passwordInput = document.getElementById('password');
+    passwordInput.addEventListener('input', function() {
+        const pwd = this.value;
+        if (!pwd) return;
+
+        document.getElementById('passwordHints').style.display = 'flex';
+
+        function updateHint(id, check) {
+            const el = document.getElementById(id);
+            el.textContent = (check ? '✓ ' : '○ ') + el.textContent.slice(2);
+            el.style.color = check ? '#16a34a' : '#a1a1aa';
         }
-        
-        const loginRes = await fetch(`${AUTH_URL}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        
-        if (loginRes.ok) {
-          const data = await loginRes.json();
-          setToken(data.accessToken);
-          window.location.href = './projects.html';
-        } else {
-          window.location.href = './index.html';
-        }
-      } catch (err) {
-        showError('registerError', 'Ошибка соединения с сервером');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Зарегистрироваться';
-      }
+
+        updateHint('hint-length', pwd.length >= 6);
+        updateHint('hint-lower', /[a-z]/.test(pwd));
+        updateHint('hint-upper', /[A-Z]/.test(pwd));
+        updateHint('hint-special', /[^a-zA-Z0-9]/.test(pwd));
     });
 
-    if (getToken()) {
-      window.location.href = './projects.html';
-    }
-  </script>
+    let createdProjectId = null;
+
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const organizationName = document.getElementById('organizationName').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const submitBtn = document.getElementById('submitBtn');
+
+        hideError('registerError');
+
+        if (password !== confirmPassword) {
+            showError('registerError', 'Пароли не совпадают');
+            return;
+        }
+
+        const checks = [
+            password.length >= 6,
+            /[a-z]/.test(password),
+            /[A-Z]/.test(password),
+            /[^a-zA-Z0-9]/.test(password)
+        ];
+        if (checks.includes(false)) {
+            showError('registerError', 'Пароль не соответствует требованиям');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Регистрация...';
+
+        try {
+            const res = await fetch(`${AUTH_URL}/api/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, organizationName })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                showError('registerError', data.message || 'Ошибка регистрации');
+                return;
+            }
+
+            setToken(data.accessToken);
+
+            const projectRes = await fetch(`${AUTH_URL}/api/projects`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${data.accessToken}`
+                },
+                body: JSON.stringify({ name: organizationName })
+            });
+
+            const project = await projectRes.json();
+            createdProjectId = project.id;
+
+            document.getElementById('apiKeyText').textContent = project.apiKey;
+            document.getElementById('codeBlock').textContent = `<script>\n  analytics.init('${project.apiKey}')\n<\/script>`;
+            document.getElementById('modalOverlay').style.display = 'flex';
+
+        } catch (err) {
+            showError('registerError', 'Ошибка соединения с сервером');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Зарегистрироваться';
+        }
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        const key = document.getElementById('apiKeyText').textContent;
+        navigator.clipboard.writeText(key);
+        this.textContent = 'Скопировано ✓';
+        setTimeout(() => this.textContent = 'Скопировать', 2000);
+    });
+
+    document.getElementById('goToDashboardBtn').addEventListener('click', function() {
+        window.location.href = `./dashboard.html?projectId=${createdProjectId}`;
+    });
+
+    document.getElementById('goToProjectsBtn').addEventListener('click', function() {
+        window.location.href = './projects.html';
+    });
+</script>
 </body>
 </html>
