@@ -9,22 +9,23 @@
     .iconButtonDanger { color: #ef4444; border: none; background: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; }
     .iconButtonDanger:hover { background: #fef2f2; }
     .projectCardActions { display: flex; align-items: center; gap: 8px; margin-top: 12px; justify-content: space-between; }
-    .apiKeyDisplay { font-family: monospace; letter-spacing: 1px; color: #a1a1aa; font-size: 14px; }
+    .apiKeyDisplay { font-family: monospace; letter-spacing: 1px; color: #a1a1aa; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .apiKeyActions { display: flex; flex-shrink: 0; }
     .apiKeyActions button { display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: none; border: none; border-radius: 4px; cursor: pointer; color: #a1a1aa; transition: 0.2s; }
-    .apiKeyActions button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .apiKeyActions button:hover { background: rgba(0,0,0,0.05); color: #71717a; }
     .projectNameRow { display: flex; align-items: center; gap: 8px; }
     .renameIcon { background: none; border: none; cursor: pointer; color: #a1a1aa; padding: 4px; display: inline-flex; border-radius: 4px; }
-    .renameIcon:hover { background: rgba(255,255,255,0.1); color: #fff; }
-    
-    .confirmModal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); z-index: 100; }
-    .confirmModal-content { background: #1a1a1e; border: 1px solid #27272a; padding: 24px; border-radius: 8px; max-width: 400px; width: 90%; }
+    .renameIcon:hover { background: rgba(0,0,0,0.05); color: #71717a; }
+
+    .confirmModal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 100; }
+    .confirmModal-content { background: #ffffff; border: 1px solid #e4e4e7; padding: 24px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
     .dangerButton { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; }
     .dangerButton:hover { background: #b91c1c; }
     .searchRow { margin-bottom: 24px; }
   </style>
 </head>
 <body>
-  <div class="page">
+  <div class="app-page">
     <div class="header">
       <div>
         <h1 class="title">Мои проекты</h1>
@@ -75,12 +76,12 @@
       <div class="createSection" style="margin-top: 40px;">
         <p class="createTitle" style="margin-bottom: 12px; font-weight: 500;">Создать новый проект</p>
         <div class="createRow" style="display: flex; gap: 12px;">
-          <input type="text" id="newProjectName" placeholder="Название проекта" class="input" style="flex: 1;" />
-          <button id="createBtn" class="button" onclick="createProject()">Создать</button>
+          <input type="text" id="newProjectName" placeholder="Название проекта" class="input" style="flex: 1; min-width: 0;" />
+          <button id="createBtn" class="button" onclick="createProject()" style="width: auto; flex-shrink: 0; padding-left: 24px; padding-right: 24px;">Создать</button>
         </div>
       </div>
     </div>
-  </div>
+  </div> <!-- .app-page -->
 
   <!-- Delete Account Modal -->
   <div id="deleteAccountModal" class="confirmModal" style="display: none;">
@@ -114,7 +115,7 @@
       <p class="modalSubtitle" id="apiKeyModalProjectName"></p>
 
       <label class="label">Текущий ключ</label>
-      <div class="apiKeyBox" style="display: flex; align-items: center; justify-content: space-between; background: #27272a; padding: 12px; border-radius: 6px; margin-bottom: 24px;">
+      <div class="apiKeyBox" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
         <span class="apiKeyText" id="apiKeyModalValue" style="font-family: monospace; color: #a1a1aa;"></span>
         <div style="display: flex; gap: 8px;">
           <button class="buttonSmall" id="apiKeyModalCopyBtn" onclick="copyModalApiKey()">Скопировать</button>
@@ -122,7 +123,7 @@
       </div>
 
       <div id="regenerateConfirmUI" style="display:none; background: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; padding: 16px; border-radius: 6px; margin-bottom: 16px;">
-        <p style="color: #fca5a5; font-size: 14px; margin: 0 0 12px 0;">Старый ключ перестанет работать немедленно. Все интеграции, использующие его, сломаются до обновления.</p>
+        <p style="color: #dc2626; font-size: 14px; margin: 0 0 12px 0;">Старый ключ перестанет работать немедленно. Все интеграции, использующие его, сломаются до обновления.</p>
         <div style="display: flex; gap: 8px;">
           <button id="doRegenerateBtn" class="dangerButton" onclick="doRegenerate()">Да, перегенерировать</button>
           <button class="buttonOutline" onclick="hideRegenerateConfirm()">Отмена</button>
@@ -144,7 +145,7 @@
       <p class="modalSubtitle">Установите SDK на ваш сайт чтобы начать собирать данные</p>
 
       <label class="label">Ваш API-ключ</label>
-      <div class="apiKeyBox" style="display: flex; background: #27272a; padding: 12px; border-radius: 6px; margin-bottom: 16px; align-items: center; justify-content: space-between;">
+      <div class="apiKeyBox" style="display: flex; margin-bottom: 16px; align-items: center; justify-content: space-between;">
         <span class="apiKeyText" id="createdApiKey" style="font-family: monospace;"></span>
         <button class="buttonSmall" id="createdCopyBtn">Скопировать</button>
       </div>

@@ -9,9 +9,7 @@
             "outputs": [
                 ".next/**",
                 "!.next/cache/**",
-                "bin/**",
-                "apps/api/**/bin/**",
-                "apps/api/**/obj/**"
+                "bin/**"
             ]
         }
     }

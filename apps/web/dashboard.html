@@ -74,37 +74,14 @@
                     const from = new Date(
                         Date.now() - 30 * 24 * 60 * 60 * 1000,
                     ).toISOString();
-                    const headers = { Authorization: `Bearer ${token}` };
-                    const base = `${DATA_URL}/api/analytics`;
+                    const base = `${DATA_URL}/api/v1/projects/${projectId}/analytics`;
 
                     const [overviewRes, eventsRes, usersRes] =
                         await Promise.all([
-                            authFetch(
-                                `${base}/overview?projectId=${projectId}&from=${from}&to=${to}`,
-                               
-                            ),
-                            authFetch(
-                                `${base}/events/timeseries?projectId=${projectId}&from=${from}&to=${to}&interval=day`,
-                               
-                            ),
-                            authFetch(
-                                `${base}/users/timeseries?projectId=${projectId}&from=${from}&to=${to}&interval=day`,
-                               
-                            ),
+                            authFetch(`${base}/overview?from=${from}&to=${to}`),
+                            authFetch(`${base}/events/timeseries?from=${from}&to=${to}&interval=day`),
+                            authFetch(`${base}/users/timeseries?from=${from}&to=${to}&interval=day`),
                         ]);
-
-                    if (
-                        overviewRes.status === 401 ||
-                        eventsRes.status === 401 ||
-                        usersRes.status === 401
-                    ) {
-                        logout();
-                        return;
-                    }
-
-                    if (!overviewRes.ok || !eventsRes.ok || !usersRes.ok) {
-                        throw new Error("Some requests failed");
-                    }
 
                     const overviewData = await overviewRes.json();
                     const eventsData = await eventsRes.json();

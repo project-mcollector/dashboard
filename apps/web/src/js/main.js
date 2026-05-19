@@ -1,5 +1,5 @@
-const AUTH_URL = 'http://127.0.0.1:5003';
-const DATA_URL = 'http://127.0.0.1:5002';
+const AUTH_URL = 'https://mcollector.publicvm.com';
+const DATA_URL = 'https://mcollector.publicvm.com';
 
 function getToken() {
   return localStorage.getItem('token');
