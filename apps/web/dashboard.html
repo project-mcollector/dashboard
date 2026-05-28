@@ -9,25 +9,16 @@
     <body>
         <div class="app-container">
             <header>
-                <div style="display: flex; align-items: center; gap: 1rem">
-                    <a
-                        href="./projects.html"
-                        class="button-link"
-                        style="font-size: 16px"
-                        >&larr; Назад к проектам</a
-                    >
-                    <h1 style="margin: 0">Дашборд</h1>
+                <div class="header-start">
+                    <a href="./projects.html" class="button-link">&larr; Назад к проектам</a>
+                    <h1 class="app-heading">Дашборд</h1>
                 </div>
                 <button onclick="logout()" class="button-link">Выйти</button>
             </header>
 
             <main>
                 <div id="loadingIndicator">Загрузка...</div>
-                <div
-                    id="errorIndicator"
-                    class="error"
-                    style="display: none; margin-bottom: 20px"
-                >
+                <div id="errorIndicator" class="error" style="display: none; margin-bottom: 20px">
                     Нет данных или ошибка соединения
                 </div>
 
@@ -57,117 +48,6 @@
         </div>
 
         <script src="./src/js/main.js"></script>
-        <script>
-            const token = getToken();
-            const projectId = getQueryParam("projectId");
-
-            if (!token) {
-                window.location.href = "./index.html";
-            }
-            if (!projectId) {
-                window.location.href = "./projects.html";
-            }
-
-            async function loadDashboard() {
-                try {
-                    const to = new Date().toISOString();
-                    const from = new Date(
-                        Date.now() - 30 * 24 * 60 * 60 * 1000,
-                    ).toISOString();
-                    const base = `${DATA_URL}/api/v1/projects/${projectId}/analytics`;
-
-                    const [overviewRes, eventsRes, usersRes] =
-                        await Promise.all([
-                            authFetch(`${base}/overview?from=${from}&to=${to}`),
-                            authFetch(`${base}/events/timeseries?from=${from}&to=${to}&interval=day`),
-                            authFetch(`${base}/users/timeseries?from=${from}&to=${to}&interval=day`),
-                        ]);
-
-                    const overviewData = await overviewRes.json();
-                    const eventsData = await eventsRes.json();
-                    const usersData = await usersRes.json();
-
-                    document.getElementById("statEvents").textContent =
-                        overviewData.totalEvents || 0;
-                    document.getElementById("statUsers").textContent =
-                        overviewData.uniqueUsers || 0;
-                    document.getElementById("statPageviews").textContent =
-                        overviewData.pageViews || 0;
-
-                    renderChart("eventsChart", eventsData, "events");
-                    renderChart("usersChart", usersData, "users");
-                } catch (err) {
-                    console.error(err);
-                    document.getElementById("errorIndicator").style.display =
-                        "block";
-                    document.getElementById("dashboardContent").style.display =
-                        "none";
-                } finally {
-                    document.getElementById("loadingIndicator").style.display =
-                        "none";
-                    if (
-                        document.getElementById("errorIndicator").style
-                            .display !== "block"
-                    ) {
-                        document.getElementById(
-                            "dashboardContent",
-                        ).style.display = "block";
-                    }
-                }
-            }
-
-            function renderChart(containerId, timeseriesData, type) {
-                const container = document.getElementById(containerId);
-                container.replaceChildren();
-
-                if (!timeseriesData || timeseriesData.length === 0) {
-                    const emptyState = document.createElement("p");
-                    emptyState.style.width = "100%";
-                    emptyState.style.textAlign = "center";
-                    emptyState.style.color = "#a1a1aa";
-                    emptyState.textContent = "Нет данных за период";
-                    container.appendChild(emptyState);
-                    return;
-                }
-
-                const counts = timeseriesData.map((d) => d.count || 0);
-                const maxCount = Math.max(...counts, 1);
-
-                timeseriesData.forEach((point) => {
-                    const heightPercent = ((point.count || 0) / maxCount) * 100;
-
-                    const wrapper = document.createElement("div");
-                    wrapper.className = "chart-bar-wrapper";
-
-                    const bar = document.createElement("div");
-                    bar.className = `chart-bar ${type === "users" ? "users" : ""}`;
-                    bar.style.height = `${heightPercent}%`;
-
-                    const tooltip = document.createElement("div");
-                    tooltip.className = "tooltip";
-                    tooltip.textContent = `${point.count || 0}`;
-                    bar.appendChild(tooltip);
-
-                    const label = document.createElement("div");
-                    label.className = "chart-label";
-                    try {
-                        const dateObj = new Date(point.timestamp);
-                        const d = dateObj.getDate().toString().padStart(2, "0");
-                        const m = (dateObj.getMonth() + 1)
-                            .toString()
-                            .padStart(2, "0");
-                        label.textContent = `${d}.${m}`;
-                    } catch {
-                        label.textContent = point.timestamp || "";
-                    }
-
-                    wrapper.appendChild(bar);
-                    wrapper.appendChild(label);
-                    container.appendChild(wrapper);
-                });
-            }
-
-            loadDashboard();
-        </script>
+        <script src="./src/js/dashboard.js"></script>
     </body>
 </html>
