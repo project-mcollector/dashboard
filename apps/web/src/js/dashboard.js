@@ -1,4 +1,5 @@
-const projectId = getQueryParam('projectId');
+const projectId = getQueryParam('projectId') || sessionStorage.getItem('lastProjectId');
+if (projectId) sessionStorage.setItem('lastProjectId', projectId);
 
 if (!getToken()) window.location.href = './index.html';
 if (!projectId) window.location.href = './projects.html';

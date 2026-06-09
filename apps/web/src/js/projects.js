@@ -82,7 +82,10 @@ function renderProjects() {
 
     const cardMain = document.createElement('div');
     cardMain.className = 'project-card-main';
-    cardMain.onclick = () => window.location.href = `./dashboard.html?projectId=${proj.id}`;
+    cardMain.onclick = () => {
+      sessionStorage.setItem('lastProjectId', proj.id);
+      window.location.href = `./dashboard.html?projectId=${proj.id}`;
+    };
 
     const nameRow = document.createElement('div');
     nameRow.className = 'project-name-row';
@@ -182,7 +185,7 @@ function openRenameModal(id, currentName) {
   const input = document.getElementById('renameInput');
   input.value = currentName;
   document.getElementById('renameModal').style.display = 'flex';
-  setTimeout(() => input.focus(), 100);
+  setTimeout(() => { input.focus(); input.select(); }, 100);
 }
 
 function closeRenameModal() {
@@ -276,7 +279,10 @@ async function doRegenerate() {
 function showCreateSuccessModal(project) {
   document.getElementById('createdApiKey').textContent = project.apiKey;
   document.getElementById('createdSnippet').textContent = `import { analytics } from '@mcollector/sdk'\n\nanalytics.init('${project.apiKey}')`;
-  document.getElementById('goToDashboardBtn').onclick = () => window.location.href = `./dashboard.html?projectId=${project.id}`;
+  document.getElementById('goToDashboardBtn').onclick = () => {
+    sessionStorage.setItem('lastProjectId', project.id);
+    window.location.href = `./dashboard.html?projectId=${project.id}`;
+  };
 
   const copyBtn = document.getElementById('createdCopyBtn');
   copyBtn.onclick = () => {
@@ -319,5 +325,18 @@ function getPlural(n, one, few, many) {
   if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return few;
   return many;
 }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('renameModal').style.display !== 'none') {
+    closeRenameModal();
+  } else if (document.getElementById('apiKeyModal').style.display !== 'none') {
+    closeApiKeyModal();
+  } else if (document.getElementById('deleteAccountModal').style.display !== 'none') {
+    closeDeleteAccountModal();
+  } else if (document.getElementById('createSuccessModal').style.display !== 'none') {
+    closeCreateSuccessModal();
+  }
+});
 
 loadData();
