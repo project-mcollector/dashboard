@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -21,7 +21,7 @@
             <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
         </button>
-        <button class="iconButtonDanger" onclick="showDeleteAccountModal()" title="Удалить аккаунт">
+        <button class="icon-button-danger" onclick="showDeleteAccountModal()" title="Удалить аккаунт">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -32,32 +32,32 @@
       </div>
     </div>
 
-    <div id="errorBanner" class="errorBanner" style="display: none;"></div>
+    <div id="errorBanner" class="error-banner" style="display: none;"></div>
 
-    <div id="searchRow" class="searchRow" style="display: none;">
+    <div id="searchRow" class="search-row" style="display: none;">
       <input type="text" id="searchInput" placeholder="Поиск проектов..." class="input" />
     </div>
 
     <div id="loadingContainer">
-      <div class="projectsGrid">
-        <div class="skeletonCard"></div>
-        <div class="skeletonCard"></div>
-        <div class="skeletonCard"></div>
+      <div class="projects-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
     </div>
 
     <div id="projectsContainer" style="display: none;">
-      <div id="emptyStateBlock" class="emptyStateBlock" style="display: none;">
-        <p class="emptyStateText">У вас пока нет проектов</p>
+      <div id="emptyStateBlock" class="empty-state-block" style="display: none;">
+        <p class="empty-state-text">У вас пока нет проектов</p>
         <button class="button" onclick="document.getElementById('newProjectName').focus()">Создать первый проект</button>
       </div>
 
-      <div id="projectsGrid" class="projectsGrid"></div>
-      <p id="noSearchResults" style="display: none; color: #a1a1aa;">Ничего не найдено</p>
+      <div id="projectsGrid" class="projects-grid"></div>
+      <p id="noSearchResults" class="empty-state" style="display: none;">Ничего не найдено</p>
 
-      <div class="createSection">
-        <p class="createTitle">Создать новый проект</p>
-        <div class="createRow">
+      <div class="create-section">
+        <p class="create-title">Создать новый проект</p>
+        <div class="create-row">
           <input type="text" id="newProjectName" placeholder="Название проекта" class="input" />
           <button id="createBtn" class="button" onclick="createProject()">Создать</button>
         </div>
@@ -65,78 +65,78 @@
     </div>
   </div>
 
-  <div id="deleteAccountModal" class="confirmModal" style="display: none;">
-    <div class="confirmModal-content">
-      <h2>Удалить аккаунт?</h2>
+  <div id="deleteAccountModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modal-title">Удалить аккаунт?</h2>
       <p class="modal-description">Все ваши проекты и данные будут удалены безвозвратно. Это действие нельзя отменить</p>
-      <div class="confirmModal-footer">
-        <button class="buttonOutline" onclick="closeDeleteAccountModal()">Отмена</button>
-        <button id="confirmDeleteAccountBtn" class="dangerButton" onclick="deleteAccount()">Удалить аккаунт</button>
+      <div class="modal-footer">
+        <button class="button-outline" onclick="closeDeleteAccountModal()">Отмена</button>
+        <button id="confirmDeleteAccountBtn" class="button-danger" onclick="deleteAccount()">Удалить аккаунт</button>
       </div>
     </div>
   </div>
 
-  <div id="renameModal" class="confirmModal" style="display: none;">
-    <div class="confirmModal-content">
-      <h2>Переименовать проект</h2>
-      <label class="label">Новое название</label>
+  <div id="renameModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modal-title">Переименовать проект</h2>
+      <label class="label" for="renameInput">Новое название</label>
       <input type="text" id="renameInput" class="input" />
-      <div class="modalButtons">
+      <div class="modal-buttons">
         <button id="confirmRenameBtn" class="button" onclick="confirmRename()">Сохранить</button>
-        <button class="buttonOutline" onclick="closeRenameModal()">Отмена</button>
+        <button class="button-outline" onclick="closeRenameModal()">Отмена</button>
       </div>
     </div>
   </div>
 
-  <div id="apiKeyModal" class="confirmModal" style="display: none;">
-    <div class="confirmModal-content">
-      <h2 class="modalTitle">API-ключ</h2>
-      <p class="modalSubtitle" id="apiKeyModalProjectName"></p>
+  <div id="apiKeyModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modal-title">API-ключ</h2>
+      <p class="modal-subtitle" id="apiKeyModalProjectName"></p>
 
       <label class="label">Текущий ключ</label>
-      <div class="apiKeyBox">
-        <span class="apiKeyText" id="apiKeyModalValue"></span>
+      <div class="api-key-box">
+        <span class="api-key-text" id="apiKeyModalValue"></span>
         <div>
-          <button class="buttonSmall" id="apiKeyModalCopyBtn" onclick="copyModalApiKey()">Скопировать</button>
+          <button class="button-small" id="apiKeyModalCopyBtn" onclick="copyModalApiKey()">Скопировать</button>
         </div>
       </div>
 
       <div id="regenerateConfirmUI" class="modal-danger-box" style="display: none;">
         <p class="modal-danger-text">Старый ключ перестанет работать немедленно. Все интеграции, использующие его, сломаются до обновления.</p>
         <div class="modal-danger-actions">
-          <button id="doRegenerateBtn" class="dangerButton" onclick="doRegenerate()">Да, перегенерировать</button>
-          <button class="buttonOutline" onclick="hideRegenerateConfirm()">Отмена</button>
+          <button id="doRegenerateBtn" class="button-danger" onclick="doRegenerate()">Да, перегенерировать</button>
+          <button class="button-outline" onclick="hideRegenerateConfirm()">Отмена</button>
         </div>
       </div>
 
-      <button id="triggerRegenerateBtn" class="buttonOutline buttonOutline--full" onclick="showRegenerateConfirm()">
+      <button id="triggerRegenerateBtn" class="button-outline button-outline--full" onclick="showRegenerateConfirm()">
         ↺ Перегенерировать ключ
       </button>
 
-      <button class="buttonOutline buttonOutline--full" onclick="closeApiKeyModal()">Закрыть</button>
+      <button class="button-outline button-outline--full" onclick="closeApiKeyModal()">Закрыть</button>
     </div>
   </div>
 
-  <div id="createSuccessModal" class="confirmModal" style="display: none;">
-    <div class="confirmModal-content">
-      <h2 class="modalTitle">Проект создан!</h2>
-      <p class="modalSubtitle">Установите SDK на ваш сайт чтобы начать собирать данные</p>
+  <div id="createSuccessModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modal-title">Проект создан!</h2>
+      <p class="modal-subtitle">Установите SDK на ваш сайт чтобы начать собирать данные</p>
 
       <label class="label">Ваш API-ключ</label>
-      <div class="apiKeyBox apiKeyBox--sm">
-        <span class="apiKeyText" id="createdApiKey"></span>
-        <button class="buttonSmall" id="createdCopyBtn">Скопировать</button>
+      <div class="api-key-box api-key-box--sm">
+        <span class="api-key-text" id="createdApiKey"></span>
+        <button class="button-small" id="createdCopyBtn">Скопировать</button>
       </div>
 
       <label class="label">Установка</label>
-      <div class="codeBlock">npm install @mcollector/sdk</div>
+      <div class="code-block">npm install @mcollector/sdk</div>
 
       <label class="label">Инициализация</label>
-      <div class="codeBlock codeBlock--wrap" id="createdSnippet"></div>
+      <div class="code-block code-block--wrap" id="createdSnippet"></div>
 
-      <div class="modalButtons">
+      <div class="modal-buttons">
         <button class="button" id="goToDashboardBtn">Перейти в дашборд</button>
-        <button class="buttonOutline" onclick="closeCreateSuccessModal()">Закрыть</button>
+        <button class="button-outline" onclick="closeCreateSuccessModal()">Закрыть</button>
       </div>
     </div>
   </div>

@@ -3,11 +3,17 @@
   --foreground: #171717;
   --primary: #18181b;
   --primary-hover: #3f3f46;
+  --surface: #ffffff;
+  --surface-subtle: #f4f4f5;
+  --border-color: #e4e4e7;
+  --border-input: #d4d4d8;
+  --hover-bg: rgba(0, 0, 0, 0.04);
   --error-bg: #fef2f2;
   --error-border: #fecaca;
   --error-text: #dc2626;
   --gray-light: #f4f4f4;
   --text-muted: #71717a;
+  --text-subtle: #a1a1aa;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,11 +22,17 @@
     --foreground: #ededed;
     --primary: #ffffff;
     --primary-hover: #aaaaaa;
+    --surface: #18181b;
+    --surface-subtle: #27272a;
+    --border-color: #27272a;
+    --border-input: #3f3f46;
+    --hover-bg: rgba(255, 255, 255, 0.06);
     --error-bg: #450a0a;
     --error-border: #7f1d1d;
     --error-text: #fca5a5;
     --gray-light: #18181b;
     --text-muted: #a1a1aa;
+    --text-subtle: #71717a;
   }
 }
 
@@ -31,6 +43,8 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* ─── Auth pages ─────────────────────────────────────────────── */
 
 .page {
   min-height: 100vh;
@@ -43,9 +57,9 @@ body {
 .card {
   width: 100%;
   max-width: 440px;
-  background: var(--background);
+  background: var(--surface);
   border-radius: 16px;
-  border: 1px solid #e4e4e7;
+  border: 1px solid var(--border-color);
   padding: 48px 40px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
@@ -67,6 +81,8 @@ body {
   margin-bottom: 32px;
 }
 
+/* ─── Form elements ──────────────────────────────────────────── */
+
 .form {
   display: flex;
   flex-direction: column;
@@ -82,12 +98,12 @@ body {
 
 .input {
   width: 100%;
-  border: 1px solid #d4d4d8;
+  border: 1px solid var(--border-input);
   border-radius: 8px;
   padding: 10px 16px;
   font-size: 14px;
-  color: #18181b;
-  background: #ffffff;
+  color: var(--foreground);
+  background: var(--surface);
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
@@ -96,6 +112,8 @@ body {
 .input:focus {
   border-color: var(--primary);
 }
+
+/* ─── Buttons ────────────────────────────────────────────────── */
 
 .button {
   width: 100%;
@@ -133,13 +151,73 @@ body {
 .button-secondary {
   background-color: var(--gray-light);
   color: var(--primary);
-  border: 1px solid #d4d4d8;
-  font-weight: normal;
+  border: 1px solid var(--border-input);
+  font-weight: 500;
 }
 
 .button-secondary:hover {
-  background-color: #e4e4e7;
+  background-color: var(--border-color);
 }
+
+.button-small {
+  background-color: var(--primary);
+  color: var(--background);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.button-small:hover {
+  background-color: var(--primary-hover);
+}
+
+.button-outline {
+  background-color: var(--surface);
+  color: var(--primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button-outline:hover {
+  background-color: var(--surface-subtle);
+}
+
+.button-outline--full {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.button-danger {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button-danger:hover {
+  background: #b91c1c;
+}
+
+.button-danger:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ─── Error / success ────────────────────────────────────────── */
 
 .error {
   background-color: var(--error-bg);
@@ -156,11 +234,13 @@ body {
   color: #16a34a;
   background: rgba(22, 163, 74, 0.1);
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 16px;
 }
 
-.linkText {
+/* ─── Auth helpers ───────────────────────────────────────────── */
+
+.link-text {
   text-align: center;
   margin-top: 20px;
   font-size: 14px;
@@ -178,15 +258,15 @@ body {
   color: var(--text-muted);
 }
 
-.passwordWrapper {
+.password-wrapper {
   position: relative;
 }
 
-.passwordWrapper .input {
+.password-wrapper .input {
   padding-right: 40px;
 }
 
-.passwordToggle {
+.password-toggle {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -194,19 +274,19 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   padding: 0;
   display: flex;
   align-items: center;
 }
 
-.passwordToggle:hover {
-  color: #18181b;
+.password-toggle:hover {
+  color: var(--primary);
 }
 
 .hint {
   font-size: 12px;
-  color: #a1a1aa;
+  color: var(--text-subtle);
 }
 
 .password-hints {
@@ -216,9 +296,11 @@ body {
   gap: 4px;
 }
 
+/* ─── App layout ─────────────────────────────────────────────── */
+
 .app-page {
   min-height: 100vh;
-  background-color: #fafafa;
+  background-color: var(--gray-light);
   padding: 40px;
   box-sizing: border-box;
 }
@@ -226,16 +308,6 @@ body {
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--gray-light);
 }
 
 .header {
@@ -243,6 +315,8 @@ header {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .header-start {
@@ -254,7 +328,7 @@ header {
 .page-title {
   font-size: 28px;
   font-weight: 700;
-  color: #18181b;
+  color: var(--primary);
   letter-spacing: -0.5px;
   margin: 0;
 }
@@ -271,14 +345,14 @@ header {
 
 .user-email {
   margin-right: 12px;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   font-size: 14px;
 }
 
 .icon-button {
   background: none;
   border: none;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -288,8 +362,26 @@ header {
 }
 
 .icon-button:hover {
-  color: #71717a;
+  color: var(--text-muted);
 }
+
+.icon-button-danger {
+  color: #ef4444;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.icon-button-danger:hover {
+  background: var(--error-bg);
+}
+
+/* ─── Stats / Charts ─────────────────────────────────────────── */
 
 .stats-grid {
   display: grid;
@@ -321,7 +413,7 @@ header {
 .chart-container-title {
   font-size: 16px;
   font-weight: 600;
-  color: #18181b;
+  color: var(--primary);
   margin: 24px 0 12px;
 }
 
@@ -329,10 +421,10 @@ header {
   display: flex;
   gap: 3px;
   height: 160px;
-  border: 1px solid #e4e4e7;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px 8px 0;
-  background: #ffffff;
+  background: var(--surface);
   margin-bottom: 40px;
   overflow: visible;
 }
@@ -369,8 +461,8 @@ header {
   bottom: calc(100% + 4px);
   left: 50%;
   transform: translateX(-50%);
-  background: #18181b;
-  color: #fff;
+  background: var(--primary);
+  color: var(--background);
   font-size: 11px;
   padding: 3px 7px;
   border-radius: 4px;
@@ -381,7 +473,7 @@ header {
 
 .chart-label {
   font-size: 9px;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   margin-top: 4px;
   text-align: center;
 }
@@ -389,9 +481,11 @@ header {
 .chart-empty {
   width: 100%;
   text-align: center;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   align-self: center;
 }
+
+/* ─── Projects ───────────────────────────────────────────────── */
 
 .projects-list {
   display: flex;
@@ -409,94 +503,78 @@ header {
   border-radius: 8px;
 }
 
-.projectsGrid {
+.projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
   margin-bottom: 40px;
 }
 
-.projectCard {
-  background: white;
-  border: 1px solid #e4e4e7;
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
   transition: box-shadow 0.2s;
   cursor: pointer;
 }
 
-.projectCard:hover {
+.project-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-.projectCardMain {
+.project-card-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 18px 24px;
 }
 
-.projectName {
+.project-name {
   font-size: 15px;
   font-weight: 500;
-  color: #18181b;
+  color: var(--primary);
 }
 
-.projectArrow {
-  color: #a1a1aa;
+.project-arrow {
+  color: var(--text-subtle);
   font-size: 18px;
 }
 
-.projectCardActions {
+.project-card-actions {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 24px;
-  border-top: 1px solid #f4f4f5;
+  border-top: 1px solid var(--surface-subtle);
   justify-content: space-between;
 }
 
-.projectNameRow {
+.project-name-row {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.renameIcon {
+.rename-icon {
   background: none;
   border: none;
   cursor: pointer;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   padding: 4px;
   display: inline-flex;
   border-radius: 4px;
 }
 
-.renameIcon:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: #71717a;
+.rename-icon:hover {
+  background: var(--hover-bg);
+  color: var(--text-muted);
 }
 
-.iconButtonDanger {
-  color: #ef4444;
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-}
-
-.iconButtonDanger:hover {
-  background: #fef2f2;
-}
-
-.apiKeyDisplay {
+.api-key-display {
   font-family: monospace;
   letter-spacing: 1px;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   font-size: 14px;
   flex: 1;
   min-width: 0;
@@ -505,12 +583,12 @@ header {
   white-space: nowrap;
 }
 
-.apiKeyActions {
+.api-key-actions {
   display: flex;
   flex-shrink: 0;
 }
 
-.apiKeyActions button {
+.api-key-actions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -519,42 +597,42 @@ header {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  color: #a1a1aa;
+  color: var(--text-subtle);
   transition: 0.2s;
 }
 
-.apiKeyActions button:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: #71717a;
+.api-key-actions button:hover {
+  background: var(--hover-bg);
+  color: var(--text-muted);
 }
 
-.createSection {
-  background: white;
-  border: 1px solid #e4e4e7;
+.create-section {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 24px;
   max-width: 480px;
   margin-top: 40px;
 }
 
-.createTitle {
+.create-title {
   font-size: 16px;
   font-weight: 600;
-  color: #18181b;
+  color: var(--primary);
   margin: 0 0 12px 0;
 }
 
-.createRow {
+.create-row {
   display: flex;
   gap: 12px;
 }
 
-.createRow .input {
+.create-row .input {
   flex: 1;
   min-width: 0;
 }
 
-.createRow .button {
+.create-row .button {
   width: auto;
   flex-shrink: 0;
   margin-top: 0;
@@ -562,23 +640,23 @@ header {
   padding-right: 24px;
 }
 
-.emptyState {
-  color: #71717a;
+.empty-state {
+  color: var(--text-muted);
   font-size: 14px;
   margin-bottom: 24px;
 }
 
-.emptyStateBlock {
+.empty-state-block {
   text-align: center;
   margin: 40px 0;
 }
 
-.emptyStateText {
-  color: #a1a1aa;
+.empty-state-text {
+  color: var(--text-subtle);
   margin-bottom: 16px;
 }
 
-.skeletonCard {
+.skeleton-card {
   height: 72px;
   border-radius: 12px;
   background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
@@ -586,24 +664,33 @@ header {
   animation: shimmer 1.5s infinite;
 }
 
+@media (prefers-color-scheme: dark) {
+  .skeleton-card {
+    background: linear-gradient(90deg, #27272a 25%, #3f3f46 50%, #27272a 75%);
+    background-size: 200% 100%;
+  }
+}
+
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-.searchRow {
+.search-row {
   margin-bottom: 24px;
 }
 
-.errorBanner {
+.error-banner {
   background: #ef4444;
   color: white;
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 24px;
 }
 
-.confirmModal {
+/* ─── Modals ─────────────────────────────────────────────────── */
+
+.modal-overlay {
   position: fixed;
   inset: 0;
   display: flex;
@@ -613,59 +700,99 @@ header {
   z-index: 100;
 }
 
-.confirmModal-content {
-  background: #ffffff;
-  border: 1px solid #e4e4e7;
-  padding: 24px;
-  border-radius: 12px;
-  max-width: 400px;
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px;
   width: 90%;
+  max-width: 480px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
 }
 
-.confirmModal-content h2 {
-  margin: 0 0 12px 0;
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 8px 0;
 }
 
-.confirmModal-content .input {
-  margin-bottom: 20px;
+.modal-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 24px 0;
 }
 
 .modal-description {
-  color: #a1a1aa;
+  color: var(--text-subtle);
   margin-bottom: 24px;
 }
 
-.confirmModal-footer {
+.modal-footer {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
-.dangerButton {
-  background: #dc2626;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
+.modal-buttons {
+  display: flex;
+  gap: 12px;
 }
 
-.dangerButton:hover {
-  background: #b91c1c;
+.modal-buttons .button,
+.modal-buttons .button-outline {
+  flex: 1;
+  margin-top: 0;
 }
 
-.dangerButton:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.api-key-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+}
+
+.api-key-box--sm {
+  margin-bottom: 16px;
+}
+
+.api-key-text {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--foreground);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code-block {
+  background: #18181b;
+  color: #e4e4e7;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: monospace;
+  font-size: 13px;
+  margin-bottom: 24px;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.code-block--wrap {
+  white-space: pre-wrap;
 }
 
 .modal-danger-box {
   background: rgba(220, 38, 38, 0.1);
   border: 1px solid #dc2626;
   padding: 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 16px;
 }
 
@@ -680,148 +807,26 @@ header {
   gap: 8px;
 }
 
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  width: 100%;
-  max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  box-sizing: border-box;
-}
-
-.modalTitle {
-  font-size: 20px;
-  font-weight: 700;
-  color: #18181b;
-  margin: 0 0 8px 0;
-}
-
-.modalSubtitle {
-  font-size: 14px;
-  color: #71717a;
-  margin: 0 0 24px 0;
-}
-
-.apiKeyBox {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: #f4f4f5;
-  border: 1px solid #e4e4e7;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 24px;
-}
-
-.apiKeyBox--sm {
-  margin-bottom: 16px;
-}
-
-.apiKeyText {
-  font-family: monospace;
-  font-size: 13px;
-  color: #18181b;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.codeBlock {
-  background: #18181b;
-  color: #e4e4e7;
-  border-radius: 8px;
-  padding: 16px;
-  font-family: monospace;
-  font-size: 13px;
-  margin-bottom: 24px;
-  white-space: pre;
-  overflow-x: auto;
-}
-
-.codeBlock--wrap {
-  white-space: pre-wrap;
-}
-
-.buttonSmall {
-  background-color: #18181b;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.2s;
-}
-
-.buttonSmall:hover {
-  background-color: #3f3f46;
-}
-
-.buttonOutline {
-  background-color: white;
-  color: #18181b;
-  border: 1px solid #e4e4e7;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.buttonOutline:hover {
-  background-color: #f4f4f5;
-}
-
-.buttonOutline--full {
-  width: 100%;
-  margin-bottom: 12px;
-}
-
-.modalButtons {
-  display: flex;
-  gap: 12px;
-}
-
-.modalButtons .button,
-.modalButtons .buttonOutline {
-  flex: 1;
-  margin-top: 0;
-}
+/* ─── Responsive ─────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .app-page {
     padding: 20px 16px;
   }
 
-  .projectsGrid {
+  .projects-grid {
     grid-template-columns: 1fr;
   }
 
-  .createSection {
+  .create-section {
     max-width: 100%;
   }
 
-  .createRow {
+  .create-row {
     flex-direction: column;
   }
 
-  .createRow .button {
+  .create-row .button {
     width: 100%;
   }
 

@@ -26,7 +26,7 @@ document.getElementById('forgotForm').addEventListener('submit', async function 
 
         successEl.textContent = 'Ссылка для сброса отправлена на ваш email';
         successEl.style.display = 'block';
-    } catch (err) {
+    } catch {
         showError('forgotError', 'Ошибка соединения с сервером');
     } finally {
         submitBtn.disabled = false;

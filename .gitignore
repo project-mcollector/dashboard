@@ -1,16 +1,8 @@
 # Dependencies
 node_modules/
 
-# Appsettings
-appsettings.*.json
-!appsettings.json
-
 # Build outputs
 dist/
-.next/
-out/
-bin/
-obj/
 
 # Turbo
 .turbo/
@@ -38,7 +30,3 @@ pnpm-debug.log*
 
 # Testing
 coverage/
-
-# .NET
-*.user
-*.suo

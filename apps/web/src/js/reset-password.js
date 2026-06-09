@@ -32,7 +32,7 @@ document.getElementById('resetForm').addEventListener('submit', async function (
 
         document.getElementById('formFields').style.display = 'none';
         document.getElementById('resetSuccess').style.display = 'block';
-    } catch (err) {
+    } catch {
         showError('resetError', 'Ошибка соединения с сервером');
     } finally {
         submitBtn.disabled = false;

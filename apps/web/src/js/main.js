@@ -33,7 +33,7 @@ async function logout() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken })
       });
-    } catch {}
+    } catch { /* ignore logout API errors, we clear auth regardless */ }
   }
   clearAuth();
   window.location.href = './index.html';

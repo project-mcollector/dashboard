@@ -45,22 +45,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint frontend
-        run: pnpm --filter web run lint
-
-      - name: Build frontend
-        run: pnpm --filter web run build
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Restore dependencies
-        run: dotnet restore apps/api
-
-      - name: Format Check
-        run: dotnet format apps/api/Api.sln --verify-no-changes
-
-      - name: Build API
-        run: dotnet build apps/api --no-restore
+      - name: Lint
+        run: pnpm lint

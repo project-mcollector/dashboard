@@ -2,11 +2,7 @@
 node_modules/
 
 # Build outputs
-.next/
-out/
 dist/
-bin/
-obj/
 
 # Turbo
 .turbo/

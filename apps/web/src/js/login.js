@@ -28,7 +28,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         setToken(data.accessToken || data.AccessToken);
         setRefreshToken(data.refreshToken || data.RefreshToken);
         window.location.href = './projects.html';
-    } catch (err) {
+    } catch {
         showError('loginError', 'Ошибка соединения с сервером');
     } finally {
         submitBtn.disabled = false;

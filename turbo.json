@@ -4,13 +4,6 @@
         "dev": {
             "cache": false
         },
-        "build": {
-            "dependsOn": ["^build"],
-            "outputs": [
-                ".next/**",
-                "!.next/cache/**",
-                "bin/**"
-            ]
-        }
+        "lint": {}
     }
 }
