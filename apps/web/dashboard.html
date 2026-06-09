@@ -9,12 +9,7 @@
 <body>
   <div class="app-page">
     <div class="app-container">
-      <header class="header">
-        <div class="header-start">
-          <a href="./projects.html" class="button-link">&larr; Назад к проектам</a>
-          <h1 class="page-title">Дашборд</h1>
-        </div>
-      </header>
+      <header id="topbar"></header>
 
       <main>
         <div id="loadingIndicator">Загрузка...</div>
@@ -52,7 +47,45 @@
     </div>
   </div>
 
+  <div id="sdkInfoModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modal-title">Интеграция SDK</h2>
+      <p class="modal-subtitle">Используйте этот ключ для подключения SDK к вашему проекту</p>
+
+      <label class="label">Ваш API-ключ</label>
+      <div class="api-key-box api-key-box--sm">
+        <span class="api-key-text" id="sdkApiKey"></span>
+        <button class="icon-button" id="sdkCopyBtn" title="Скопировать"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+
+      <label class="label">Установка</label>
+      <div class="code-block">npm install @mcollector/sdk</div>
+
+      <label class="label">Инициализация</label>
+      <div class="code-block code-block--wrap" id="sdkSnippet"></div>
+
+      <label class="label">Документация</label>
+      <a href="https://www.npmjs.com/package/@mcollector/sdk" target="_blank" rel="noopener noreferrer" class="button-link">@mcollector/sdk на npm →</a>
+
+      <div class="modal-buttons">
+        <button class="button-outline" onclick="closeSdkInfoModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="deleteProjectModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modal-title">Удалить проект?</h2>
+      <p class="modal-description">Все данные аналитики будут удалены безвозвратно. Это действие нельзя отменить.</p>
+      <div class="modal-footer">
+        <button class="button-outline" onclick="closeDeleteProjectModal()">Отмена</button>
+        <button id="confirmDeleteProjectBtn" class="button-danger" onclick="deleteProject()">Удалить проект</button>
+      </div>
+    </div>
+  </div>
+
   <script src="./src/js/main.js"></script>
+  <script src="./src/js/topbar.js"></script>
   <script src="./src/js/dashboard.js"></script>
 </body>
 </html>

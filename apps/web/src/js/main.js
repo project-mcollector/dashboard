@@ -75,6 +75,46 @@ function copyToClipboard(text) {
   return navigator.clipboard.writeText(text);
 }
 
+const CLEAR_BTN_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+function setupClearButtons() {
+  document.querySelectorAll('.input-clear-wrapper, .password-wrapper').forEach(wrapper => {
+    const input = wrapper.querySelector('input');
+    if (!input) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'clear-btn';
+    btn.tabIndex = -1;
+    btn.setAttribute('aria-label', 'Очистить');
+    btn.innerHTML = CLEAR_BTN_SVG;
+
+    const toggle = wrapper.querySelector('.password-toggle');
+    if (toggle) wrapper.insertBefore(btn, toggle);
+    else wrapper.appendChild(btn);
+
+    const isPasswordWrapper = wrapper.classList.contains('password-wrapper');
+    function update() {
+      if (input.value) {
+        btn.style.display = 'block';
+        input.style.paddingRight = isPasswordWrapper ? '68px' : '34px';
+      } else {
+        btn.style.display = 'none';
+        input.style.paddingRight = '';
+      }
+    }
+    btn.addEventListener('click', () => {
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.focus();
+    });
+    input.addEventListener('input', update);
+    update();
+  });
+}
+
+setupClearButtons();
+
 let refreshPromise = null;
 
 async function tryRefresh() {

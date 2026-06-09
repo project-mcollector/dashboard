@@ -8,56 +8,64 @@
 </head>
 <body>
 <div class="page">
-  <div class="card">
-    <h1 class="title">MCollector</h1>
-    <p class="subtitle">Создайте аккаунт</p>
+  <div class="auth-two-col">
+    <div class="card">
+      <h1 class="title">MCollector</h1>
+      <p class="subtitle">Создайте аккаунт</p>
 
-    <form id="registerForm" class="form">
-      <div id="registerError" class="error"></div>
+      <form id="registerForm" class="form">
+        <div id="registerError" class="error"></div>
 
-      <div>
-        <label class="label" for="email">Email</label>
-        <input type="email" id="email" placeholder="you@example.com" class="input" required />
-      </div>
-
-      <div>
-        <label class="label" for="organizationName">Название организации</label>
-        <input type="text" id="organizationName" placeholder="Моя компания" class="input" required />
-      </div>
-
-      <div>
-        <label class="label" for="password">Пароль</label>
-        <div class="password-wrapper">
-          <input type="password" id="password" placeholder="••••••••" class="input" required />
-          <button type="button" class="password-toggle" id="togglePassword">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
+        <div>
+          <label class="label" for="email">Email</label>
+          <div class="input-clear-wrapper">
+            <input type="email" id="email" placeholder="you@example.com" class="input" required />
+          </div>
         </div>
-        <div id="passwordHints" class="password-hints" style="display: none;">
-          <div class="hint" id="hint-length" data-text="Не менее 6 символов">○ Не менее 6 символов</div>
-          <div class="hint" id="hint-lower" data-text="Строчная буква (a-z)">○ Строчная буква (a-z)</div>
-          <div class="hint" id="hint-upper" data-text="Заглавная буква (A-Z)">○ Заглавная буква (A-Z)</div>
-          <div class="hint" id="hint-special" data-text="Специальный символ (!@#$)">○ Специальный символ (!@#$)</div>
+
+        <div>
+          <label class="label" for="organizationName">Название организации</label>
+          <div class="input-clear-wrapper">
+            <input type="text" id="organizationName" placeholder="Моя компания" class="input" required />
+          </div>
         </div>
-      </div>
 
-      <div>
-        <label class="label" for="confirmPassword">Подтвердите пароль</label>
-        <div class="password-wrapper">
-          <input type="password" id="confirmPassword" placeholder="••••••••" class="input" required />
-          <button type="button" class="password-toggle" id="toggleConfirmPassword">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
+        <div>
+          <label class="label" for="password">Пароль</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" placeholder="••••••••" class="input" required />
+            <button type="button" class="password-toggle" id="togglePassword">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div id="passwordHints" class="password-hints" style="display: none;">
+            <div class="hint" id="hint-length" data-text="Не менее 6 символов">○ Не менее 6 символов</div>
+            <div class="hint" id="hint-lower" data-text="Строчная буква (a-z)">○ Строчная буква (a-z)</div>
+            <div class="hint" id="hint-upper" data-text="Заглавная буква (A-Z)">○ Заглавная буква (A-Z)</div>
+            <div class="hint" id="hint-special" data-text="Специальный символ (!@#$)">○ Специальный символ (!@#$)</div>
+          </div>
         </div>
-      </div>
 
-      <button type="submit" class="button" id="submitBtn">Зарегистрироваться</button>
+        <div>
+          <label class="label" for="confirmPassword">Подтвердите пароль</label>
+          <div class="password-wrapper">
+            <input type="password" id="confirmPassword" placeholder="••••••••" class="input" required />
+            <button type="button" class="password-toggle" id="toggleConfirmPassword">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
 
-      <p class="link-text">
-        Уже есть аккаунт?
-        <a href="./index.html" class="link">Войти</a>
-      </p>
-    </form>
+        <button type="submit" class="button" id="submitBtn">Зарегистрироваться</button>
+
+        <p class="link-text">
+          Уже есть аккаунт?
+          <a href="./index.html" class="link">Войти</a>
+        </p>
+      </form>
+    </div>
+
+    <div id="integration-card"></div>
   </div>
 </div>
 
@@ -83,6 +91,7 @@
 </div>
 
 <script src="./src/js/main.js"></script>
+<script src="./src/js/integration-card.js"></script>
 <script src="./src/js/register.js"></script>
 </body>
 </html>

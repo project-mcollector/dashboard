@@ -3,6 +3,14 @@ if (getToken()) window.location.href = './projects.html';
 setupPasswordToggle('togglePassword', 'password');
 setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
 
+const emailInput = document.getElementById('email');
+emailInput.addEventListener('input', () => sessionStorage.setItem('authEmail', emailInput.value));
+const savedEmail = sessionStorage.getItem('authEmail');
+if (savedEmail) {
+  emailInput.value = savedEmail;
+  emailInput.dispatchEvent(new Event('input'));
+}
+
 function updateHint(id, check) {
   const el = document.getElementById(id);
   const text = el.dataset.text;

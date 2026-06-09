@@ -8,29 +8,7 @@
 </head>
 <body>
   <div class="app-page">
-    <div class="header">
-      <div>
-        <h1 class="page-title">Мои проекты</h1>
-        <p class="subtitle" id="projectsCount" style="display: none;"></p>
-      </div>
-      <div class="user-info">
-        <span id="userEmail" class="user-email"></span>
-        <button class="icon-button" onclick="logout()" title="Выйти">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-        </button>
-        <button class="icon-button-danger" onclick="showDeleteAccountModal()" title="Удалить аккаунт">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-            <path d="M10 11v6"/><path d="M14 11v6"/>
-            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-          </svg>
-        </button>
-      </div>
-    </div>
+    <header id="topbar"></header>
 
     <div id="errorBanner" class="error-banner" style="display: none;"></div>
 
@@ -125,7 +103,7 @@
       <label class="label">Ваш API-ключ</label>
       <div class="api-key-box api-key-box--sm">
         <span class="api-key-text" id="createdApiKey"></span>
-        <button class="button-small" id="createdCopyBtn">Скопировать</button>
+        <button class="icon-button" id="createdCopyBtn" title="Скопировать"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
       </div>
 
       <label class="label">Установка</label>
@@ -133,6 +111,9 @@
 
       <label class="label">Инициализация</label>
       <div class="code-block code-block--wrap" id="createdSnippet"></div>
+
+      <label class="label">Документация</label>
+      <a href="https://www.npmjs.com/package/@mcollector/sdk" target="_blank" rel="noopener noreferrer" class="button-link">@mcollector/sdk на npm →</a>
 
       <div class="modal-buttons">
         <button class="button-outline" onclick="closeCreateSuccessModal()">Закрыть</button>
@@ -142,6 +123,7 @@
   </div>
 
   <script src="./src/js/main.js"></script>
+  <script src="./src/js/topbar.js"></script>
   <script src="./src/js/projects.js"></script>
 </body>
 </html>

@@ -8,53 +8,48 @@
 </head>
 <body>
 <div class="page">
-  <div class="card">
-    <h1 class="title">MCollector</h1>
-    <p class="subtitle">Аналитика для вашего сайта</p>
+  <div class="auth-two-col">
+    <div class="card">
+      <h1 class="title">MCollector</h1>
+      <p class="subtitle">Аналитика для вашего сайта</p>
 
-    <form id="loginForm" class="form">
-      <div id="loginError" class="error"></div>
+      <form id="loginForm" class="form">
+        <div id="loginError" class="error"></div>
 
-      <div>
-        <label class="label" for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="you@example.com"
-          class="input"
-          required
-        />
-      </div>
-
-      <div>
-        <label class="label" for="password">Пароль</label>
-        <div class="password-wrapper">
-          <input
-            type="password"
-            id="password"
-            placeholder="••••••••"
-            class="input"
-            required
-          />
-          <button type="button" class="password-toggle" id="togglePassword">
-            <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
+        <div>
+          <label class="label" for="email">Email</label>
+          <div class="input-clear-wrapper">
+            <input type="email" id="email" placeholder="you@example.com" class="input" required />
+          </div>
         </div>
-      </div>
 
-      <button type="submit" class="button" id="submitBtn">Войти</button>
+        <div>
+          <label class="label" for="password">Пароль</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" placeholder="••••••••" class="input" required />
+            <button type="button" class="password-toggle" id="togglePassword">
+              <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
 
-      <p class="link-text">
-        Нет аккаунта?
-        <a href="./register.html" class="link">Зарегистрироваться</a>
-        <br><br>
-        <a href="./forgot-password.html" class="link">Забыли пароль?</a>
-      </p>
-    </form>
+        <button type="submit" class="button" id="submitBtn">Войти</button>
+
+        <p class="link-text">
+          Нет аккаунта?
+          <a href="./register.html" class="link">Зарегистрироваться</a>
+          <br><br>
+          <a href="./forgot-password.html" class="link">Забыли пароль?</a>
+        </p>
+      </form>
+    </div>
+
+    <div id="integration-card"></div>
   </div>
 </div>
 
 <script src="./src/js/main.js"></script>
+<script src="./src/js/integration-card.js"></script>
 <script src="./src/js/login.js"></script>
 </body>
 </html>

@@ -2,6 +2,14 @@ if (getToken()) window.location.href = './projects.html';
 
 setupPasswordToggle('togglePassword', 'password');
 
+const emailInput = document.getElementById('email');
+emailInput.addEventListener('input', () => sessionStorage.setItem('authEmail', emailInput.value));
+const savedEmail = sessionStorage.getItem('authEmail');
+if (savedEmail) {
+  emailInput.value = savedEmail;
+  emailInput.dispatchEvent(new Event('input'));
+}
+
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const email = document.getElementById('email').value;

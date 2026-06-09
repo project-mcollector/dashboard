@@ -67,6 +67,93 @@ body {
   box-sizing: border-box;
 }
 
+.auth-two-col {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 928px;
+}
+
+.auth-two-col .card {
+  flex: 1 1 340px;
+  max-width: 440px;
+}
+
+.integration-card {
+  flex: 1 1 340px;
+  max-width: 440px;
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 48px 40px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.integration-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.integration-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+}
+
+.integration-step {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.integration-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.integration-code {
+  background: var(--foreground);
+  color: var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: monospace;
+  font-size: 13px;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.integration-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  text-decoration: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  width: fit-content;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.integration-link:hover {
+  background-color: var(--surface-subtle);
+}
+
 .title {
   font-size: 28px;
   font-weight: 700;
@@ -270,12 +357,39 @@ body {
   color: var(--text-muted);
 }
 
+.input-clear-wrapper {
+  position: relative;
+}
+
+
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-subtle);
+  padding: 0;
+  display: none;
+  line-height: 0;
+}
+
+.clear-btn:hover {
+  color: var(--text-muted);
+}
+
 .password-wrapper {
   position: relative;
 }
 
 .password-wrapper .input {
   padding-right: 40px;
+}
+
+.password-wrapper .clear-btn {
+  right: 40px;
 }
 
 .password-toggle {
@@ -333,6 +447,13 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.topbar-back {
+  display: block;
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: var(--text-muted);
 }
 
 .page-title {
@@ -838,6 +959,79 @@ body {
 .modal-danger-actions {
   display: flex;
   gap: 8px;
+}
+
+/* ─── Period controls ────────────────────────────────────────── */
+
+.period-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.date-range {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-subtle);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.date-range-btn {
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.date-range-btn:hover {
+  color: var(--foreground);
+}
+
+.date-range-btn--active {
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.period-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.period-nav-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.period-nav-btn:hover:not(:disabled) {
+  background: var(--surface-subtle);
+}
+
+.period-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.period-nav-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  min-width: 140px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */

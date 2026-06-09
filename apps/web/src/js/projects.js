@@ -2,6 +2,8 @@
 
 if (!getToken()) window.location.href = './index.html';
 
+initTopbar({ title: 'Мои проекты', subtitleId: 'projectsCount', showUserActions: true, showDeleteAccount: true });
+
 let currentProjects = [];
 let visibleKeys = new Set();
 let renameTarget = null;
@@ -84,6 +86,8 @@ function renderProjects() {
     cardMain.className = 'project-card-main';
     cardMain.onclick = () => {
       sessionStorage.setItem('lastProjectId', proj.id);
+      sessionStorage.setItem('lastProjectName', proj.name);
+      sessionStorage.setItem('lastApiKey', proj.apiKey);
       window.location.href = `./dashboard.html?projectId=${proj.id}`;
     };
 
@@ -281,14 +285,16 @@ function showCreateSuccessModal(project) {
   document.getElementById('createdSnippet').textContent = `import { analytics } from '@mcollector/sdk'\n\nanalytics.init('${project.apiKey}')`;
   document.getElementById('goToDashboardBtn').onclick = () => {
     sessionStorage.setItem('lastProjectId', project.id);
+    sessionStorage.setItem('lastProjectName', project.name);
+    sessionStorage.setItem('lastApiKey', project.apiKey);
     window.location.href = `./dashboard.html?projectId=${project.id}`;
   };
 
   const copyBtn = document.getElementById('createdCopyBtn');
   copyBtn.onclick = () => {
     copyToClipboard(project.apiKey);
-    copyBtn.textContent = 'Скопировано ✓';
-    setTimeout(() => copyBtn.textContent = 'Скопировать', 2000);
+    copyBtn.style.color = '#16a34a';
+    setTimeout(() => copyBtn.style.color = '', 2000);
   };
 
   document.getElementById('createSuccessModal').style.display = 'flex';
