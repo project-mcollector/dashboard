@@ -4,8 +4,8 @@
   "description": "Vanilla JS frontend for MCollector Dashboard",
   "type": "module",
   "scripts": {
-    "dev": "npx serve .",
-    "start": "npx serve .",
+    "dev": "npx serve . -p 3000",
+    "start": "npx serve . -p 3000",
     "lint": "eslint \"src/js/**/*.js\"",
     "lint:fix": "eslint \"src/js/**/*.js\" --fix"
   },

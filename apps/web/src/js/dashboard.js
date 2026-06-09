@@ -8,7 +8,7 @@ async function loadDashboard() {
   try {
     const to = new Date().toISOString();
     const from = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const base = `${AUTH_URL}/api/v1/projects/${projectId}/analytics`;
+    const base = `${ANALYTICS_URL}/api/v1/projects/${projectId}/analytics`;
 
     const [overviewRes, eventsRes, usersRes] = await Promise.all([
       authFetch(`${base}/overview?from=${from}&to=${to}`),
