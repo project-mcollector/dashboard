@@ -121,15 +121,17 @@ async function loadDashboard() {
     const interval = periodDays <= 1 ? 'hour' : 'day';
     const base = `${ANALYTICS_URL}/api/v1/projects/${projectId}/analytics`;
 
-    const [overviewRes, eventsRes, usersRes] = await Promise.all([
+    const [overviewRes, eventsRes, usersRes, countsRes] = await Promise.all([
       authFetch(`${base}/overview?from=${from.toISOString()}&to=${to.toISOString()}`),
       authFetch(`${base}/events/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}`),
       authFetch(`${base}/users/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}`),
+      authFetch(`${base}/events/counts?from=${from.toISOString()}&to=${to.toISOString()}`),
     ]);
 
     const overviewData = await overviewRes.json();
     const eventsData = await eventsRes.json();
     const usersData = await usersRes.json();
+    const countsData = await countsRes.json();
 
     document.getElementById('statEvents').textContent = overviewData.totalEvents || 0;
     document.getElementById('statUsers').textContent = overviewData.uniqueUsers || 0;
@@ -140,6 +142,7 @@ async function loadDashboard() {
     document.querySelector('#usersChart').closest('.chart-section').querySelector('.chart-container-title').textContent = `Пользователи по ${unit}`;
     renderChart('eventsChart', eventsData, 'events');
     renderChart('usersChart', usersData, 'users');
+    renderEventCounts(countsData, base, from, to, interval);
   } catch (err) {
     failed = true;
     console.error(err);
@@ -201,6 +204,89 @@ function renderChart(containerId, timeseriesData, type) {
     wrapper.appendChild(label);
     container.appendChild(wrapper);
   });
+}
+
+let selectedEvent = null;
+
+function renderEventCounts(eventCounts, base, from, to, interval) {
+  const container = document.getElementById('eventCountsTable');
+  container.replaceChildren();
+
+  if (!eventCounts || eventCounts.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'chart-empty';
+    empty.textContent = 'Нет данных';
+    container.appendChild(empty);
+    return;
+  }
+
+  const table = document.createElement('table');
+  table.className = 'table';
+
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  ['Название', 'Всего', ''].forEach(text => {
+    const th = document.createElement('th');
+    th.textContent = text;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+
+  eventCounts.forEach(event => {
+    const row = document.createElement('tr');
+
+    const nameCell = document.createElement('td');
+    nameCell.textContent = event.name;
+
+    const countCell = document.createElement('td');
+    countCell.textContent = event.count;
+
+    const actionCell = document.createElement('td');
+    const btn = document.createElement('button');
+    btn.className = 'button-small';
+    btn.textContent = selectedEvent === event.name ? 'Скрыть' : 'График';
+    btn.addEventListener('click', () => handleEventClick(event.name, base, from, to, interval));
+
+    actionCell.appendChild(btn);
+    row.appendChild(nameCell);
+    row.appendChild(countCell);
+    row.appendChild(actionCell);
+    tbody.appendChild(row);
+
+    if (selectedEvent === event.name) {
+      const chartRow = document.createElement('tr');
+      const chartCell = document.createElement('td');
+      chartCell.colSpan = 3;
+
+      const chartContainer = document.createElement('div');
+      chartContainer.className = 'chart-container';
+      chartContainer.id = 'selectedEventChart';
+
+      chartCell.appendChild(chartContainer);
+      chartRow.appendChild(chartCell);
+      tbody.appendChild(chartRow);
+    }
+  });
+
+  table.appendChild(tbody);
+  container.appendChild(table);
+}
+
+async function handleEventClick(eventName, base, from, to, interval) {
+  if (selectedEvent === eventName) {
+    selectedEvent = null;
+  } else {
+    selectedEvent = eventName;
+    const res = await authFetch(
+        `${base}/events/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}&eventName=${encodeURIComponent(eventName)}`
+    );
+    const data = await res.json();
+    renderChart('selectedEventChart', data, 'events');
+  }
+  loadDashboard();
 }
 
 function populateSdkModal(apiKey) {
