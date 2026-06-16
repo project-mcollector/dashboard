@@ -207,6 +207,7 @@ function renderChart(containerId, timeseriesData, type) {
 }
 
 let selectedEvent = null;
+let selectedEventData = null;
 
 function renderEventCounts(eventCounts, base, from, to, interval) {
   const container = document.getElementById('eventCountsTable');
@@ -273,18 +274,23 @@ function renderEventCounts(eventCounts, base, from, to, interval) {
 
   table.appendChild(tbody);
   container.appendChild(table);
+
+  if (selectedEvent && selectedEventData) {
+    renderChart('selectedEventChart', selectedEventData, 'events');
+  }
 }
 
 async function handleEventClick(eventName, base, from, to, interval) {
   if (selectedEvent === eventName) {
     selectedEvent = null;
+    selectedEventData = null;
   } else {
-    selectedEvent = eventName;
     const res = await authFetch(
         `${base}/events/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}&eventName=${encodeURIComponent(eventName)}`
     );
     const data = await res.json();
-    renderChart('selectedEventChart', data, 'events');
+    selectedEvent = eventName;
+    selectedEventData = data;
   }
   loadDashboard();
 }
