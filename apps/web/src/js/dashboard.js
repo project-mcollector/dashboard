@@ -112,6 +112,8 @@ document.getElementById('nextPeriodBtn').addEventListener('click', () => {
 updatePeriodControls();
 
 async function loadDashboard() {
+  selectedEvent = null;
+  selectedEventData = null;
   document.getElementById('loadingIndicator').style.display = 'block';
   document.getElementById('dashboardContent').style.display = 'none';
   document.getElementById('errorIndicator').style.display = 'none';
@@ -208,8 +210,13 @@ function renderChart(containerId, timeseriesData, type) {
 
 let selectedEvent = null;
 let selectedEventData = null;
+let cachedEventCounts = null;
+let cachedEventParams = null;
 
 function renderEventCounts(eventCounts, base, from, to, interval) {
+  cachedEventCounts = eventCounts;
+  cachedEventParams = { base, from, to, interval };
+
   const container = document.getElementById('eventCountsTable');
   container.replaceChildren();
 
@@ -243,13 +250,15 @@ function renderEventCounts(eventCounts, base, from, to, interval) {
     nameCell.textContent = event.name;
 
     const countCell = document.createElement('td');
+    countCell.className = 'table-count';
     countCell.textContent = event.count;
 
     const actionCell = document.createElement('td');
+    actionCell.className = 'table-action';
     const btn = document.createElement('button');
-    btn.className = 'button-small';
+    btn.className = selectedEvent === event.name ? 'button-small button-small--active' : 'button-small button-small--outline';
     btn.textContent = selectedEvent === event.name ? 'Скрыть' : 'График';
-    btn.addEventListener('click', () => handleEventClick(event.name, base, from, to, interval));
+    btn.addEventListener('click', () => handleEventClick(event.name, btn));
 
     actionCell.appendChild(btn);
     row.appendChild(nameCell);
@@ -259,6 +268,7 @@ function renderEventCounts(eventCounts, base, from, to, interval) {
 
     if (selectedEvent === event.name) {
       const chartRow = document.createElement('tr');
+      chartRow.className = 'table-chart-row';
       const chartCell = document.createElement('td');
       chartCell.colSpan = 3;
 
@@ -280,19 +290,29 @@ function renderEventCounts(eventCounts, base, from, to, interval) {
   }
 }
 
-async function handleEventClick(eventName, base, from, to, interval) {
+async function handleEventClick(eventName, btn) {
+  const { base, from, to, interval } = cachedEventParams;
+
   if (selectedEvent === eventName) {
     selectedEvent = null;
     selectedEventData = null;
   } else {
-    const res = await authFetch(
+    btn.textContent = '...';
+    btn.disabled = true;
+    try {
+      const res = await authFetch(
         `${base}/events/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}&eventName=${encodeURIComponent(eventName)}`
-    );
-    const data = await res.json();
-    selectedEvent = eventName;
-    selectedEventData = data;
+      );
+      const data = await res.json();
+      selectedEvent = eventName;
+      selectedEventData = data;
+    } catch {
+      btn.textContent = 'График';
+      btn.disabled = false;
+      return;
+    }
   }
-  loadDashboard();
+  renderEventCounts(cachedEventCounts, base, from, to, interval);
 }
 
 function populateSdkModal(apiKey) {

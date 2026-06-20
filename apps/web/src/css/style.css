@@ -257,18 +257,90 @@ body {
 .button-small {
   background-color: var(--primary);
   color: var(--background);
-  border: none;
+  border: 1px solid transparent;
   border-radius: 6px;
   padding: 6px 14px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, opacity 0.2s;
 }
 
 .button-small:hover {
   background-color: var(--primary-hover);
+}
+
+.button-small--outline {
+  background-color: transparent;
+  color: var(--primary);
+  border-color: var(--border-color);
+}
+
+.button-small--outline:hover {
+  background-color: var(--hover-bg);
+}
+
+.button-small--active {
+  background-color: var(--primary);
+  color: var(--background);
+}
+
+.button-small:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ─── Event counts table ─────────────────────────────────────── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table thead th {
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s;
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover:not(.table-chart-row) {
+  background-color: var(--hover-bg);
+}
+
+.table td {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.table .table-count {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  width: 80px;
+}
+
+.table .table-action {
+  width: 90px;
+  text-align: right;
+}
+
+.table-chart-row td {
+  padding: 12px;
+  background-color: var(--surface-subtle);
 }
 
 .button-outline {
