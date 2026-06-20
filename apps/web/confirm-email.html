@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MCollector - Подтверждение email</title>
+  <link rel="icon" href="./favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="./favicon.png">
   <link rel="stylesheet" href="./src/css/style.css">
 </head>
 <body>
@@ -24,10 +26,10 @@
       <p class="subtitle">Ошибка подтверждения</p>
       <div id="confirmError" class="error" style="display: block;"></div>
 
-      <div id="resendSection" style="margin-top: 16px;">
+      <div id="resendSection" class="resend-section">
         <div id="resendDone" class="success-message">Письмо отправлено повторно</div>
         <div id="resendForm">
-          <div id="resendEmailWrapper" style="display: none; margin-bottom: 8px;">
+          <div id="resendEmailWrapper" class="resend-email-wrapper" style="display: none;">
             <input type="email" id="resendEmail" placeholder="your@email.com" class="input" />
           </div>
           <button class="button" id="resendBtn">Отправить письмо повторно</button>
@@ -63,6 +65,7 @@
   </div>
 </div>
 
+<script src="./config.js"></script>
 <script src="./src/js/main.js"></script>
 <script src="./src/js/confirm-email.js"></script>
 </body>

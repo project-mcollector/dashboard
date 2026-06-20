@@ -41,7 +41,7 @@ document.getElementById('resetForm').addEventListener('submit', async function (
     submitBtn.textContent = 'Сохранение...';
 
     try {
-        const res = await fetch(`${AUTH_URL}/api/auth/reset-password`, {
+        const res = await fetch(`${API_URL}/api/auth/reset-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, token, password })

@@ -10,7 +10,7 @@ document.getElementById('forgotForm').addEventListener('submit', async function 
     submitBtn.textContent = 'Отправка...';
 
     try {
-        await fetch(`${AUTH_URL}/api/auth/forgot-password`, {
+        await fetch(`${API_URL}/api/auth/forgot-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })

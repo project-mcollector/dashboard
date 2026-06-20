@@ -121,7 +121,7 @@ async function loadDashboard() {
   try {
     const { from, to } = getPeriodDates();
     const interval = periodDays <= 1 ? 'hour' : 'day';
-    const base = `${ANALYTICS_URL}/api/v1/projects/${projectId}/analytics`;
+    const base = `${API_URL}/api/v1/projects/${projectId}/analytics`;
 
     const [overviewRes, eventsRes, usersRes, countsRes] = await Promise.all([
       authFetch(`${base}/overview?from=${from.toISOString()}&to=${to.toISOString()}`),
@@ -338,7 +338,7 @@ async function showSdkInfoModal() {
   document.getElementById('sdkSnippet').textContent = '';
 
   try {
-    const res = await authFetch(`${AUTH_URL}/api/projects/${projectId}`);
+    const res = await authFetch(`${API_URL}/api/projects/${projectId}`);
     const project = await res.json();
     const key = project.apiKey || '';
     sessionStorage.setItem('lastApiKey', key);
@@ -365,7 +365,7 @@ async function deleteProject() {
   btn.disabled = true;
   btn.textContent = 'Удаление...';
   try {
-    await authFetch(`${AUTH_URL}/api/projects/${projectId}`, { method: 'DELETE' });
+    await authFetch(`${API_URL}/api/projects/${projectId}`, { method: 'DELETE' });
     sessionStorage.removeItem('lastProjectId');
     window.location.href = './projects.html';
   } catch {

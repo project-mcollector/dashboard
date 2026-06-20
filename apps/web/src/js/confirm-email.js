@@ -21,7 +21,7 @@ async function confirm() {
     }
 
     try {
-        const res = await fetch(`${AUTH_URL}/api/auth/confirm-email`, {
+        const res = await fetch(`${API_URL}/api/auth/confirm-email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, token })
@@ -42,7 +42,7 @@ async function confirm() {
         if (orgName) {
             localStorage.removeItem('pendingOrgName');
             try {
-                const projectRes = await authFetch(`${AUTH_URL}/api/projects`, {
+                const projectRes = await authFetch(`${API_URL}/api/projects`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: orgName })
@@ -98,7 +98,7 @@ document.getElementById('resendBtn').addEventListener('click', async function ()
     this.textContent = 'Отправка...';
 
     try {
-        await fetch(`${AUTH_URL}/api/auth/resend-confirmation`, {
+        await fetch(`${API_URL}/api/auth/resend-confirmation`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })

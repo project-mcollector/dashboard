@@ -68,7 +68,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
   submitBtn.textContent = 'Регистрация...';
 
   try {
-    const res = await fetch(`${AUTH_URL}/api/auth/register`, {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, organizationName })
@@ -87,7 +87,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
       return;
     }
 
-    const loginRes = await fetch(`${AUTH_URL}/api/auth/login`, {
+    const loginRes = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -109,7 +109,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     setToken(data.accessToken || data.AccessToken);
     setRefreshToken(data.refreshToken || data.RefreshToken);
 
-    const projectRes = await authFetch(`${AUTH_URL}/api/projects`, {
+    const projectRes = await authFetch(`${API_URL}/api/projects`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: organizationName })
