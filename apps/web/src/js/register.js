@@ -4,7 +4,12 @@ setupPasswordToggle('togglePassword', 'password');
 setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
 
 const emailInput = document.getElementById('email');
-emailInput.addEventListener('input', () => sessionStorage.setItem('authEmail', emailInput.value));
+const gmailWarning = document.getElementById('gmailWarning');
+emailInput.addEventListener('input', () => {
+  sessionStorage.setItem('authEmail', emailInput.value);
+  const isGmail = /@gmail\.com\s*$/i.test(emailInput.value);
+  gmailWarning.style.display = isGmail ? 'block' : 'none';
+});
 const savedEmail = sessionStorage.getItem('authEmail');
 if (savedEmail) {
   emailInput.value = savedEmail;

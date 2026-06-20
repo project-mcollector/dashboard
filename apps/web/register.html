@@ -16,10 +16,13 @@
       <form id="registerForm" class="form">
         <div id="registerError" class="error"></div>
 
-        <div>
+        <div style="position: relative;">
           <label class="label" for="email">Email</label>
           <div class="input-clear-wrapper">
             <input type="email" id="email" placeholder="you@example.com" class="input" required />
+          </div>
+          <div id="gmailWarning" class="field-warning" style="display: none;">
+            Gmail блокирует письма от нашего сервиса — подтверждение может не прийти. Пожалуйста, используйте другой адрес
           </div>
         </div>
 

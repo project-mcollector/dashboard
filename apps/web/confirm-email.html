@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCollector - Подтверждение email</title>
+  <link rel="stylesheet" href="./src/css/style.css">
+</head>
+<body>
+<div class="page">
+  <div class="card">
+    <h1 class="title">MCollector</h1>
+
+    <div id="loadingState">
+      <p class="subtitle">Подтверждаем email...</p>
+    </div>
+
+    <div id="successState" style="display: none;">
+      <p class="subtitle">Email подтверждён</p>
+      <p class="link-text"><a href="./projects.html" class="link">К проектам</a></p>
+    </div>
+
+    <div id="errorState" style="display: none;">
+      <p class="subtitle">Ошибка подтверждения</p>
+      <div id="confirmError" class="error" style="display: block;"></div>
+
+      <div id="resendSection" style="margin-top: 16px;">
+        <div id="resendDone" class="success-message">Письмо отправлено повторно</div>
+        <div id="resendForm">
+          <div id="resendEmailWrapper" style="display: none; margin-bottom: 8px;">
+            <input type="email" id="resendEmail" placeholder="your@email.com" class="input" />
+          </div>
+          <button class="button" id="resendBtn">Отправить письмо повторно</button>
+        </div>
+      </div>
+
+      <p class="link-text"><a href="./index.html" class="link">Войти</a></p>
+    </div>
+  </div>
+</div>
+
+<div id="projectModal" class="modal-overlay" style="display: none;">
+  <div class="modal">
+    <h2 class="modal-title">Проект создан!</h2>
+    <p class="modal-subtitle">Сохраните ваш API-ключ — он понадобится для установки SDK на сайт</p>
+
+    <label class="label">Ваш API-ключ</label>
+    <div class="api-key-box">
+      <span class="api-key-text" id="apiKeyText"></span>
+      <button class="button-small" id="copyBtn">Скопировать</button>
+    </div>
+
+    <label class="label">Установка</label>
+    <div class="code-block">npm install @mcollector/sdk</div>
+
+    <label class="label">Инициализация</label>
+    <div class="code-block code-block--wrap" id="sdkSnippet"></div>
+
+    <div class="modal-buttons">
+      <button class="button" id="goToDashboardBtn">Перейти в дашборд</button>
+      <button class="button-outline" id="goToProjectsBtn">К проектам</button>
+    </div>
+  </div>
+</div>
+
+<script src="./src/js/main.js"></script>
+<script src="./src/js/confirm-email.js"></script>
+</body>
+</html>
