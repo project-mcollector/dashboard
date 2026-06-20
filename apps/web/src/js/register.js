@@ -30,7 +30,7 @@ passwordInput.addEventListener('input', function () {
 
   document.getElementById('passwordHints').style.display = 'flex';
 
-  updateHint('hint-length', pwd.length >= 6);
+  updateHint('hint-length', pwd.length >= 8);
   updateHint('hint-lower', /[a-z]/.test(pwd));
   updateHint('hint-upper', /[A-Z]/.test(pwd));
   updateHint('hint-special', /[^a-zA-Z0-9]/.test(pwd));
@@ -54,7 +54,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
   }
 
   const checks = [
-    password.length >= 6,
+    password.length >= 8,
     /[a-z]/.test(password),
     /[A-Z]/.test(password),
     /[^a-zA-Z0-9]/.test(password)

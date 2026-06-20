@@ -23,7 +23,7 @@ passwordInput.addEventListener('input', function () {
         return;
     }
     document.getElementById('passwordHints').style.display = 'flex';
-    updateHint('hint-length', pwd.length >= 6);
+    updateHint('hint-length', pwd.length >= 8);
     updateHint('hint-lower', /[a-z]/.test(pwd));
     updateHint('hint-upper', /[A-Z]/.test(pwd));
     updateHint('hint-special', /[^a-zA-Z0-9]/.test(pwd));
