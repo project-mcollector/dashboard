@@ -1216,7 +1216,8 @@ body {
 }
 
 @media (max-width: 480px) {
-  .card {
+  .card,
+  .integration-card {
     padding: 32px 24px;
   }
 }
