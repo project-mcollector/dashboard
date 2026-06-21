@@ -144,7 +144,7 @@ async function loadDashboard() {
     document.getElementById('statUsers').textContent = overviewData.uniqueUsers || 0;
     document.getElementById('statPageviews').textContent = overviewData.pageViews || 0;
     document.getElementById('statUptime').textContent = (overviewData.uptime ?? 0) + '%';
-    document.getElementById('statErrors').textContent = errorsCount;
+    document.getElementById('statErrors').textContent = errorsData.total || 0;
 
     const unit = periodDays <= 1 ? 'часам' : 'дням';
     document.querySelector('#eventsChart').closest('.chart-section').querySelector('.chart-container-title').textContent = `События по ${unit}`;
@@ -399,20 +399,6 @@ document.addEventListener('keydown', (e) => {
   if (document.getElementById('sdkInfoModal').style.display !== 'none') closeSdkInfoModal();
   else closeDeleteProjectModal();
 });
-
-async function loadErrorStats(base, from, to) {
-  try {
-    const [errorRes, fatalRes] = await Promise.all([
-      authFetch(`${base}/logs?from=${from.toISOString()}&to=${to.toISOString()}&level=error&limit=1`),
-      authFetch(`${base}/logs?from=${from.toISOString()}&to=${to.toISOString()}&level=fatal&limit=1`)
-    ]);
-    const errorData = await errorRes.json();
-    const fatalData = await fatalRes.json();
-    return (errorData.total || 0) + (fatalData.total || 0);
-  } catch {
-    return 0;
-  }
-}
 
 async function loadErrorsChart(base, from, to, interval) {
   try {
