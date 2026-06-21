@@ -149,8 +149,8 @@ async function loadDashboard() {
     const unit = periodDays <= 1 ? 'часам' : 'дням';
     document.querySelector('#eventsChart').closest('.chart-section').querySelector('.chart-container-title').textContent = `События по ${unit}`;
     document.querySelector('#usersChart').closest('.chart-section').querySelector('.chart-container-title').textContent = `Пользователи по ${unit}`;
-    renderChart('eventsChart', eventsData, 'events');
-    renderChart('usersChart', usersData, 'users');
+    renderChart('eventsChart', fillTimeseriesGaps(eventsData, from, to, interval), 'events');
+    renderChart('usersChart', fillTimeseriesGaps(usersData, from, to, interval), 'users');
     await loadErrorsChart(base, from, to, interval);
     renderEventCounts(countsData, base, from, to, interval);
 
@@ -410,32 +410,37 @@ async function loadErrorsChart(base, from, to, interval) {
     const fatalLogs = (await fatalRes.json()).logs || [];
     const allLogs = [...errorLogs, ...fatalLogs];
 
-    const stepMs = interval === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
-    const buckets = {};
-
-    for (let t = new Date(from); t < to; t = new Date(t.getTime() + stepMs)) {
-      const key = interval === 'hour'
-        ? new Date(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours()).toISOString()
-        : new Date(t.getFullYear(), t.getMonth(), t.getDate()).toISOString();
-      buckets[key] = 0;
-    }
-
-    allLogs.forEach(log => {
-      const d = new Date(log.timestamp);
-      const key = interval === 'hour'
-        ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()).toISOString()
-        : new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString();
-      buckets[key] = (buckets[key] || 0) + 1;
-    });
-
-    const timeseries = Object.entries(buckets)
-      .map(([timestamp, count]) => ({ timestamp, count }))
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const raw = allLogs.map(log => ({ timestamp: log.timestamp, count: 1 }));
+    const timeseries = fillTimeseriesGaps(raw, from, to, interval);
 
     renderChart('errorsChart', timeseries, 'errors');
   } catch {
     renderChart('errorsChart', [], 'errors');
   }
+}
+
+function fillTimeseriesGaps(data, from, to, interval) {
+  const stepMs = interval === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+  const buckets = {};
+
+  for (let t = new Date(from); t < to; t = new Date(t.getTime() + stepMs)) {
+    const key = interval === 'hour'
+      ? new Date(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours()).toISOString()
+      : new Date(t.getFullYear(), t.getMonth(), t.getDate()).toISOString();
+    buckets[key] = 0;
+  }
+
+  (data || []).forEach(point => {
+    const d = new Date(point.timestamp);
+    const key = interval === 'hour'
+      ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()).toISOString()
+      : new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString();
+    buckets[key] = (buckets[key] || 0) + (point.count || 0);
+  });
+
+  return Object.entries(buckets)
+    .map(([timestamp, count]) => ({ timestamp, count }))
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 }
 
 // ─── Logs ──────────────────────────────────────────────────────────────────
