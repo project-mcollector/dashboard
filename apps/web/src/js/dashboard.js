@@ -114,6 +114,7 @@ updatePeriodControls();
 async function loadDashboard() {
   selectedEvent = null;
   selectedEventData = null;
+  logsOffset = 0;
   document.getElementById('loadingIndicator').style.display = 'block';
   document.getElementById('dashboardContent').style.display = 'none';
   document.getElementById('errorIndicator').style.display = 'none';
@@ -145,6 +146,7 @@ async function loadDashboard() {
     renderChart('eventsChart', eventsData, 'events');
     renderChart('usersChart', usersData, 'users');
     renderEventCounts(countsData, base, from, to, interval);
+    loadLogs(false);
   } catch (err) {
     failed = true;
     console.error(err);
@@ -380,5 +382,137 @@ document.addEventListener('keydown', (e) => {
   if (document.getElementById('sdkInfoModal').style.display !== 'none') closeSdkInfoModal();
   else closeDeleteProjectModal();
 });
+
+// ─── Logs ──────────────────────────────────────────────────────────────────
+
+let logsLevel = '';
+let logsSearch = '';
+let logsOffset = 0;
+const LOGS_LIMIT = 50;
+
+let logsSearchTimer = null;
+document.getElementById('logsSearch').addEventListener('input', (e) => {
+  clearTimeout(logsSearchTimer);
+  logsSearchTimer = setTimeout(() => {
+    logsSearch = e.target.value.trim();
+    logsOffset = 0;
+    loadLogs(false);
+  }, 300);
+});
+
+document.getElementById('logLevelFilters').addEventListener('click', (e) => {
+  const pill = e.target.closest('.log-level-pill');
+  if (!pill) return;
+  document.querySelectorAll('.log-level-pill').forEach(p => p.classList.remove('log-level-pill--active'));
+  pill.classList.add('log-level-pill--active');
+  logsLevel = pill.dataset.level;
+  logsOffset = 0;
+  loadLogs(false);
+});
+
+document.getElementById('logsMoreBtn').addEventListener('click', () => loadLogs(true));
+
+async function loadLogs(append) {
+  if (!append) logsOffset = 0;
+
+  const { from, to } = getPeriodDates();
+  const params = new URLSearchParams({
+    from: from.toISOString(),
+    to: to.toISOString(),
+    limit: String(LOGS_LIMIT),
+    offset: String(logsOffset),
+  });
+  if (logsLevel) params.set('level', logsLevel);
+  if (logsSearch) params.set('search', logsSearch);
+
+  const base = `${API_URL}/api/v1/projects/${projectId}/analytics`;
+
+  try {
+    const res = await authFetch(`${base}/logs?${params}`);
+    const data = await res.json();
+    renderLogs(data.logs, data.total, append);
+  } catch {
+    if (!append) {
+      const container = document.getElementById('logsContainer');
+      container.replaceChildren();
+      const empty = document.createElement('p');
+      empty.className = 'chart-empty';
+      empty.textContent = 'Не удалось загрузить логи';
+      container.appendChild(empty);
+    }
+  }
+}
+
+const LOG_BADGE_LEVELS = new Set(['trace', 'debug', 'info', 'warn', 'error', 'fatal']);
+
+function renderLogs(logs, total, append) {
+  const container = document.getElementById('logsContainer');
+  const moreRow = document.getElementById('logsMoreRow');
+
+  if (!append) container.replaceChildren();
+
+  if (!logs || logs.length === 0) {
+    if (!append) {
+      const empty = document.createElement('p');
+      empty.className = 'chart-empty';
+      empty.textContent = 'Нет логов за период';
+      container.appendChild(empty);
+    }
+    moreRow.style.display = 'none';
+    return;
+  }
+
+  let tbody = append ? container.querySelector('tbody') : null;
+
+  if (!tbody) {
+    const table = document.createElement('table');
+    table.className = 'table logs-table';
+
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Время', 'Уровень', 'Сообщение'].forEach(text => {
+      const th = document.createElement('th');
+      th.textContent = text;
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+
+  logs.forEach(log => {
+    const row = document.createElement('tr');
+
+    const timeCell = document.createElement('td');
+    timeCell.className = 'log-time';
+    const ts = new Date(log.timestamp);
+    timeCell.textContent = ts.toLocaleString('ru-RU', {
+      day: '2-digit', month: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    });
+
+    const levelCell = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = `log-badge${LOG_BADGE_LEVELS.has(log.level) ? ` log-badge--${log.level}` : ''}`;
+    badge.textContent = log.level;
+    levelCell.appendChild(badge);
+
+    const msgCell = document.createElement('td');
+    msgCell.className = 'log-message';
+    msgCell.textContent = log.message || '—';
+    msgCell.title = log.message || '';
+
+    row.appendChild(timeCell);
+    row.appendChild(levelCell);
+    row.appendChild(msgCell);
+    tbody.appendChild(row);
+  });
+
+  logsOffset += logs.length;
+  moreRow.style.display = logsOffset < total ? 'block' : 'none';
+}
 
 loadDashboard();

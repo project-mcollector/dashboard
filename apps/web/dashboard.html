@@ -49,6 +49,30 @@
             <h2 class="chart-container-title">Пользователи по дням</h2>
             <div class="chart-container" id="usersChart"></div>
           </div>
+
+          <div class="chart-section">
+            <div class="logs-header">
+              <h2 class="chart-container-title">Логи</h2>
+              <div class="logs-toolbar">
+                <div class="input-clear-wrapper logs-search-wrapper">
+                  <input type="search" id="logsSearch" class="input logs-search" placeholder="Поиск по сообщению...">
+                </div>
+                <div class="log-level-filters" id="logLevelFilters">
+                  <button class="log-level-pill log-level-pill--active" data-level="">Все</button>
+                  <button class="log-level-pill" data-level="trace">trace</button>
+                  <button class="log-level-pill" data-level="debug">debug</button>
+                  <button class="log-level-pill" data-level="info">info</button>
+                  <button class="log-level-pill" data-level="warn">warn</button>
+                  <button class="log-level-pill" data-level="error">error</button>
+                  <button class="log-level-pill" data-level="fatal">fatal</button>
+                </div>
+              </div>
+            </div>
+            <div id="logsContainer"></div>
+            <div id="logsMoreRow" style="display:none; text-align:center; margin-top:16px;">
+              <button id="logsMoreBtn" class="button-outline">Загрузить ещё</button>
+            </div>
+          </div>
         </div>
       </main>
     </div>
