@@ -80,11 +80,13 @@ body {
 .auth-two-col .card {
   flex: 1 1 340px;
   max-width: 440px;
+  min-width: 0;
 }
 
 .integration-card {
   flex: 1 1 340px;
   max-width: 440px;
+  min-width: 0;
   background: var(--surface);
   border-radius: 16px;
   border: 1px solid var(--border-color);
