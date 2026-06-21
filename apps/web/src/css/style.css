@@ -692,6 +692,10 @@ body {
   background: #3b82f6;
 }
 
+.chart-bar.errors {
+  background: #dc2626;
+}
+
 .chart-bar:hover > .tooltip {
   display: block;
 }

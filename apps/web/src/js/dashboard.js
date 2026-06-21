@@ -124,11 +124,12 @@ async function loadDashboard() {
     const interval = periodDays <= 1 ? 'hour' : 'day';
     const base = `${API_URL}/api/v1/projects/${projectId}/analytics`;
 
-    const [overviewRes, eventsRes, usersRes, countsRes] = await Promise.all([
+    const [overviewRes, eventsRes, usersRes, countsRes, errorsCount] = await Promise.all([
       authFetch(`${base}/overview?from=${from.toISOString()}&to=${to.toISOString()}`),
       authFetch(`${base}/events/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}`),
       authFetch(`${base}/users/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}`),
       authFetch(`${base}/events/counts?from=${from.toISOString()}&to=${to.toISOString()}`),
+      loadErrorStats(base, from, to),
     ]);
 
     const overviewData = await overviewRes.json();
@@ -140,12 +141,14 @@ async function loadDashboard() {
     document.getElementById('statUsers').textContent = overviewData.uniqueUsers || 0;
     document.getElementById('statPageviews').textContent = overviewData.pageViews || 0;
     document.getElementById('statUptime').textContent = (overviewData.uptime ?? 0) + '%';
+    document.getElementById('statErrors').textContent = errorsCount;
 
     const unit = periodDays <= 1 ? 'часам' : 'дням';
     document.querySelector('#eventsChart').closest('.chart-section').querySelector('.chart-container-title').textContent = `События по ${unit}`;
     document.querySelector('#usersChart').closest('.chart-section').querySelector('.chart-container-title').textContent = `Пользователи по ${unit}`;
     renderChart('eventsChart', eventsData, 'events');
     renderChart('usersChart', usersData, 'users');
+    await loadErrorsChart(base, from, to, interval);
     renderEventCounts(countsData, base, from, to, interval);
     loadLogs(false);
   } catch (err) {
@@ -186,6 +189,7 @@ function renderChart(containerId, timeseriesData, type) {
     const bar = document.createElement('div');
     bar.className = 'chart-bar';
     if (type === 'users') bar.classList.add('users');
+    if (type === 'errors') bar.classList.add('errors');
     bar.style.height = `${heightPercent}%`;
 
     const tooltip = document.createElement('div');
@@ -383,6 +387,49 @@ document.addEventListener('keydown', (e) => {
   if (document.getElementById('sdkInfoModal').style.display !== 'none') closeSdkInfoModal();
   else closeDeleteProjectModal();
 });
+
+async function loadErrorStats(base, from, to) {
+  try {
+    const [errorRes, fatalRes] = await Promise.all([
+      authFetch(`${base}/logs?from=${from.toISOString()}&to=${to.toISOString()}&level=error&limit=1`),
+      authFetch(`${base}/logs?from=${from.toISOString()}&to=${to.toISOString()}&level=fatal&limit=1`)
+    ]);
+    const errorData = await errorRes.json();
+    const fatalData = await fatalRes.json();
+    return (errorData.total || 0) + (fatalData.total || 0);
+  } catch {
+    return 0;
+  }
+}
+
+async function loadErrorsChart(base, from, to, interval) {
+  try {
+    const [errorRes, fatalRes] = await Promise.all([
+      authFetch(`${base}/logs?from=${from.toISOString()}&to=${to.toISOString()}&level=error&limit=1000`),
+      authFetch(`${base}/logs?from=${from.toISOString()}&to=${to.toISOString()}&level=fatal&limit=1000`)
+    ]);
+    const errorLogs = (await errorRes.json()).logs || [];
+    const fatalLogs = (await fatalRes.json()).logs || [];
+    const allLogs = [...errorLogs, ...fatalLogs];
+
+    const buckets = {};
+    allLogs.forEach(log => {
+      const d = new Date(log.timestamp);
+      const key = interval === 'hour'
+        ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()).toISOString()
+        : new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString();
+      buckets[key] = (buckets[key] || 0) + 1;
+    });
+
+    const timeseries = Object.entries(buckets)
+      .map(([timestamp, count]) => ({ timestamp, count }))
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    renderChart('errorsChart', timeseries, 'errors');
+  } catch {
+    renderChart('errorsChart', [], 'errors');
+  }
+}
 
 // ─── Logs ──────────────────────────────────────────────────────────────────
 
