@@ -139,6 +139,7 @@ async function loadDashboard() {
     document.getElementById('statEvents').textContent = overviewData.totalEvents || 0;
     document.getElementById('statUsers').textContent = overviewData.uniqueUsers || 0;
     document.getElementById('statPageviews').textContent = overviewData.pageViews || 0;
+    document.getElementById('statUptime').textContent = (overviewData.uptime ?? 0) + '%';
 
     const unit = periodDays <= 1 ? 'часам' : 'дням';
     document.querySelector('#eventsChart').closest('.chart-section').querySelector('.chart-container-title').textContent = `События по ${unit}`;
