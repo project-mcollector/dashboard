@@ -410,7 +410,16 @@ async function loadErrorsChart(base, from, to, interval) {
     const fatalLogs = (await fatalRes.json()).logs || [];
     const allLogs = [...errorLogs, ...fatalLogs];
 
+    const stepMs = interval === 'hour' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
     const buckets = {};
+
+    for (let t = new Date(from); t < to; t = new Date(t.getTime() + stepMs)) {
+      const key = interval === 'hour'
+        ? new Date(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours()).toISOString()
+        : new Date(t.getFullYear(), t.getMonth(), t.getDate()).toISOString();
+      buckets[key] = 0;
+    }
+
     allLogs.forEach(log => {
       const d = new Date(log.timestamp);
       const key = interval === 'hour'
