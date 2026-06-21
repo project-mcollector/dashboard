@@ -124,17 +124,21 @@ async function loadDashboard() {
     const interval = periodDays <= 1 ? 'hour' : 'day';
     const base = `${API_URL}/api/v1/projects/${projectId}/analytics`;
 
-    const [overviewRes, eventsRes, usersRes, countsRes] = await Promise.all([
-      authFetch(`${base}/overview?from=${from.toISOString()}&to=${to.toISOString()}`),
-      authFetch(`${base}/events/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}`),
-      authFetch(`${base}/users/timeseries?from=${from.toISOString()}&to=${to.toISOString()}&interval=${interval}`),
-      authFetch(`${base}/events/counts?from=${from.toISOString()}&to=${to.toISOString()}`),
+    const periodQuery = `from=${from.toISOString()}&to=${to.toISOString()}`;
+
+    const [overviewRes, eventsRes, usersRes, countsRes, errorsRes] = await Promise.all([
+      authFetch(`${base}/overview?${periodQuery}`),
+      authFetch(`${base}/events/timeseries?${periodQuery}&interval=${interval}`),
+      authFetch(`${base}/users/timeseries?${periodQuery}&interval=${interval}`),
+      authFetch(`${base}/events/counts?${periodQuery}`),
+      authFetch(`${base}/logs?${periodQuery}&level=error&limit=1&offset=0`),
     ]);
 
     const overviewData = await overviewRes.json();
     const eventsData = await eventsRes.json();
     const usersData = await usersRes.json();
     const countsData = await countsRes.json();
+    const errorsData = await errorsRes.json();
 
     document.getElementById('statEvents').textContent = overviewData.totalEvents || 0;
     document.getElementById('statUsers').textContent = overviewData.uniqueUsers || 0;
@@ -147,6 +151,15 @@ async function loadDashboard() {
     renderChart('eventsChart', eventsData, 'events');
     renderChart('usersChart', usersData, 'users');
     renderEventCounts(countsData, base, from, to, interval);
+
+    const insights = computeAnalyticsInsights({
+      overview: overviewData,
+      eventsSeries: eventsData,
+      usersSeries: usersData,
+      errorLogCount: errorsData.total || 0,
+      periodDays,
+    });
+    renderAnalyticsInsights('analyticsInsights', insights);
     loadLogs(false);
   } catch (err) {
     failed = true;

@@ -35,6 +35,8 @@ const projectGlobals = {
     setupPasswordToggle: "readonly",
     copyToClipboard: "readonly",
     authFetch: "readonly",
+    computeAnalyticsInsights: "readonly",
+    renderAnalyticsInsights: "readonly",
 };
 
 export default [
