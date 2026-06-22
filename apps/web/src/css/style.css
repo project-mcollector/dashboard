@@ -1282,6 +1282,31 @@ body {
     gap: 16px;
   }
 
+  .header .user-info {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .period-nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .period-nav-label {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .date-range {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .date-range-btn {
+    flex: 1;
+    text-align: center;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
@@ -1416,9 +1441,11 @@ body {
 
   .logs-toolbar {
     justify-content: flex-start;
+    width: 100%;
   }
 
   .logs-search-wrapper {
     width: 100%;
   }
+
 }

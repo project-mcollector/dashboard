@@ -190,7 +190,7 @@ function renderChart(containerId, timeseriesData, type) {
 
   const counts = timeseriesData.map((d) => d.count || 0);
   const maxCount = Math.max(...counts, 1);
-  const labelStep = Math.ceil(timeseriesData.length / 30);
+  const labelStep = Math.ceil(timeseriesData.length / 10);
 
   timeseriesData.forEach((point, index) => {
     const heightPercent = ((point.count || 0) / maxCount) * 100;
